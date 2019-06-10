@@ -7,7 +7,7 @@ The purpose of this project is to create a Wifi controller for an orange Axixtec
 
 # Realisation
 
-According to [the manual](../blob/master/TORRENT%20Lightbar%20Operation%20Manual.pdf) the wiring is extremely simple.  
+According to [the manual](../master/TORRENT%20Lightbar%20Operation%20Manual.pdf) the wiring is extremely simple.  
 To select a mode, one should just connect one of the wires to 12V.  
 
 ![](wiring.jpg).
