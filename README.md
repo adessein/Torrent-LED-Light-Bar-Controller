@@ -7,14 +7,14 @@ The purpose of this project is to create a Wifi controller for an orange Axixtec
 
 # Realisation
 
-According to [the manual](../blob/master/TORRENT Lightbar Operation Manual.pdf) the wiring is extremely simple.  
+According to [the manual](../blob/master/TORRENT%20Lightbar%20Operation%20Manual.pdf) the wiring is extremely simple.  
 To select a mode, one should just connect one of the wires to 12V.  
 
 ![](wiring.jpg).
 
 ## Electronics
 
-The circuit is rather simple, based on Darlington NPN transistor arrays and shift registers.
+The circuit is rather simple, based on Darlington NPN transistor arrays and shift registers.  
 [My EDA project can be found here](https://easyeda.com/arnaud.dessein/torrent-light-bar)  
 
 ![](https://image.easyeda.com/histories/0bb19d9765f84e8ca09aadaa262d7e98.png)  
