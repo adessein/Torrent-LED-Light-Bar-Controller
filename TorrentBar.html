@@ -73,13 +73,11 @@ input:checked + .slider:before {
 </style>
 
 <!-- https://stackoverflow.com/a/10420584/6863846 -->
-<script src="jquery.min.js"></script>
 <input type="hidden" name="action" id="action" />
+
 <script language="javascript" type="text/javascript">
-  
   $(document).ready(function () {
-  //when a submit button is clicked, put its name into the action hidden field
-    $(":checkbox").click(function() { $(this).closest("form").submit();});
+    //when a submit button is clicked, put its name into the action hidden field
     $(":submit").click(function () { $("#action").val(this.name); $(this).closest("form").submit();});
   });
 </script>
@@ -98,11 +96,11 @@ input:checked + .slider:before {
 <p><input type="submit" class="bttn" value="Rear Right Arrow" name="prog" /></p>
 <p><input type="submit" class="bttn" value="Take Dowmns" name="prog" /></p>
 
-<h2>Toggle Switch</h2>
+<h2>Modifiers</h2>
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="RightSide">
+  <input type="checkbox" name="RightSide" onClick="this.form.submit()" value='1' {C1}>
   <span class="slider round"></span>
 </label>
 Enable right-side alley lights
@@ -110,7 +108,7 @@ Enable right-side alley lights
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="LeftSide">
+  <input type="checkbox" name="LeftSide" onClick="this.form.submit()" value='1' {C2}>
   <span class="slider round"></span>
 </label>
 Enable left-side alley lights
@@ -118,7 +116,7 @@ Enable left-side alley lights
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="Flashing">
+  <input type="checkbox" name="Flashing" onClick="this.form.submit()" value='1' {C3}>
   <span class="slider round"></span>
 </label>
 Enable flashing
@@ -126,7 +124,7 @@ Enable flashing
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="HighPower">
+  <input type="checkbox" name="HighPower" onClick="this.form.submit()" value='1' {C4}>
   <span class="slider round"></span>
 </label>
 High power
@@ -134,7 +132,7 @@ High power
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="FlashTD">
+  <input type="checkbox" name="FlashTD" onClick="this.form.submit()" value='1' {C5}>
   <span class="slider round"></span>
 </label>
 Flash TDs and alleys
@@ -142,7 +140,7 @@ Flash TDs and alleys
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="DisableFront">
+  <input type="checkbox" name="DisableFront" onClick="this.form.submit()" value='1' {C6}>
   <span class="slider round"></span>
 </label>
 Disable front lights
@@ -150,7 +148,7 @@ Disable front lights
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="DisableR">
+  <input type="checkbox" name="DisableR" onClick="this.form.submit()" value='1' {C7}>
   <span class="slider round"></span>
 </label>
 Disable read lights
