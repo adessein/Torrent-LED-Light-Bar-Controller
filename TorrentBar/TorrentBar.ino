@@ -24,6 +24,8 @@ IPAddress apIP(192, 168, 1, 1);
 DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
+short C1, C2, C3, C4, C5, C6, C7;
+
 const char index_page[] = R"=====(
 <!DOCTYPE html>
 <html>
@@ -190,20 +192,22 @@ Disable read lights
 
 void setup()
 {
-        WiFi.mode(WIFI_AP);
-        WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-        WiFi.softAP(ssid);
-
-        Serial.begin(115200);
-        
-        // if DNSServer is started with "*" for domain name, it will reply with
-        // provided IP to all DNS request
-        dnsServer.start(DNS_PORT, "*", apIP);
-
-        webServer.on("/", handleRoot);
-        webServer.onNotFound(handleRoot);
+  C1=C2=C3=C4=C5=C6=C7=0;
   
-        webServer.begin();
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  WiFi.softAP(ssid);
+
+  Serial.begin(115200);
+
+  // if DNSServer is started with "*" for domain name, it will reply with
+  // provided IP to all DNS request
+  dnsServer.start(DNS_PORT, "*", apIP);
+
+  webServer.on("/", handleRoot);
+  webServer.onNotFound(handleRoot);
+
+  webServer.begin();
 }
 
 void loop()
@@ -229,11 +233,11 @@ void handleRoot()
     String index_str(index_page);
     index_str.replace("{C1}","");
     index_str.replace("{C2}","checked");
-    index_str.replace("{C3}","0");
+    index_str.replace("{C3}","");
     index_str.replace("{C4}","checked");
     index_str.replace("{C5}","checked");
-    index_str.replace("{C6}","0");
-    index_str.replace("{C7}","0");
+    index_str.replace("{C6}","");
+    index_str.replace("{C7}","");
     webServer.send(200, "text/html", index_str.c_str());
   }
 }
