@@ -20,11 +20,17 @@
 const byte DNS_PORT = 53;
 const char *ssid = "Torrent LED Bar";
 
+const int dataPin = 12;   //Outputs the byte to transfer [D6]
+const int loadPin = 15;   //Controls the internal transference of data in SN74HC595 internal registers (LATCH) [D8]
+const int clockPin = 13; //Generates the clock signal to control the transference of data [D7]
+byte datah = 0xFF;
+byte datal = 0;
+
 IPAddress apIP(192, 168, 1, 1);
 DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
-short C1, C2, C3, C4, C5, C6, C7;
+short C1, C2, C3, C4, C5, C6, C7, C8;
 
 const char index_page[] = R"=====(
 <!DOCTYPE html>
@@ -153,10 +159,10 @@ Enable flashing
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="HighPower" onClick="this.form.submit()" value='1' {C4}>
+  <input type="checkbox" name="LowPower" onClick="this.form.submit()" value='1' {C4}>
   <span class="slider round"></span>
 </label>
-High power
+Low power
 </p>
 
 <p>
@@ -177,10 +183,18 @@ Disable front lights
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="DisableR" onClick="this.form.submit()" value='1' {C7}>
+  <input type="checkbox" name="DisableRear" onClick="this.form.submit()" value='1' {C7}>
   <span class="slider round"></span>
 </label>
-Disable read lights
+Disable rear lights
+</p>
+
+<p>
+<label class="switch">
+  <input type="checkbox" name="ProgramMode" onClick="this.form.submit()" value='1' {C8}>
+  <span class="slider round"></span>
+</label>
+Program mode
 </p>
 
 </form>
@@ -190,84 +204,139 @@ Disable read lights
 
 )=====";
 
-void setup()
-{
-  C1=C2=C3=C4=C5=C6=C7=0;
+void setup(){
+  Serial.begin(115200);
+  Serial.println("=== Torrent LED Bar ===");
+  Serial.println("Starting ...");
   
+  C1=C2=C3=C4=C5=C6=C7=0;
+
+  Serial.print("I/Os......... ");
+  pinMode(dataPin, OUTPUT);
+  pinMode(loadPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  Serial.println("OK !");
+  
+  Serial.print("Wifi......... ");
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
   WiFi.softAP(ssid);
+  Serial.println("OK !");
 
-  Serial.begin(115200);
-
+  Serial.print("DNS.......... ");
   // if DNSServer is started with "*" for domain name, it will reply with
-  // provided IP to all DNS request
+  // provided IP to all DNS request  
   dnsServer.start(DNS_PORT, "*", apIP);
+  Serial.println("OK !");
 
-  webServer.on("/", handleRoot);
+  Serial.print("Web server... ");
+  //webServer.on("/", handleRoot);
   webServer.onNotFound(handleRoot);
-
   webServer.begin();
+  Serial.println("OK !");
 }
 
-void loop()
-{
-        dnsServer.processNextRequest();
-        webServer.handleClient();
+void loop() {
+  dnsServer.processNextRequest();
+  webServer.handleClient();
 }
 
-void handleRoot()
-{
-  if (webServer.hasArg("prog") | 
-      webServer.hasArg("RightSide") |
-      webServer.hasArg("LeftSide") |
-      webServer.hasArg("Flashing") |
-      webServer.hasArg("HighPower") |
-      webServer.hasArg("FlashTD") |
-      webServer.hasArg("DisableFront") |
-      webServer.hasArg("DisableR")
-      ) {
-    handleSubmit();
-  }
-  else {
-    String index_str(index_page);
-    index_str.replace("{C1}","");
-    index_str.replace("{C2}","checked");
-    index_str.replace("{C3}","");
-    index_str.replace("{C4}","checked");
-    index_str.replace("{C5}","checked");
-    index_str.replace("{C6}","");
-    index_str.replace("{C7}","");
-    webServer.send(200, "text/html", index_str.c_str());
-  }
+void handleRoot() {  
+  Serial.println("Processing request... ");
+  handleSubmit();
+  sendIndex();
 }
 
-void handleSubmit()
-{
+void sendIndex(){
+  Serial.println("Sending index page... ");
+  String index_str(index_page);
+  index_str.replace("{C1}",C1?"checked":"");
+  index_str.replace("{C2}",C2?"checked":"");
+  index_str.replace("{C3}",C3?"checked":"");
+  index_str.replace("{C4}",C4?"checked":"");
+  index_str.replace("{C5}",C5?"checked":"");
+  index_str.replace("{C6}",C6?"checked":"");
+  index_str.replace("{C7}",C7?"checked":"");
+  index_str.replace("{C8}",C8?"checked":"");
+  webServer.send(200, "text/html", index_str.c_str());
+}
+
+void writeRegister(byte bh, byte bl) {
+  Serial.println("writeRegister");
+  Serial.print(bh, BIN); Serial.print(" "); Serial.println(bl, BIN); 
+  digitalWrite(loadPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, bh);
+  shiftOut(dataPin, clockPin, MSBFIRST, bl);
+  digitalWrite(loadPin, HIGH);
+}
+
+void handleSubmit(){
   Serial.println("handleSubmit");
 
-  if (webServer.hasArg("prog"))
-  {
-    Serial.println("prog");
-    Serial.println(webServer.arg("prog"));
-    }
+  if (webServer.hasArg("prog"))  {
+    String prog = webServer.arg("prog");
+    Serial.print("Prog= "); Serial.println(prog);
 
-  if (webServer.hasArg("RightSide"))
-  {
-    Serial.print("RightSide= ");
-    Serial.println(webServer.arg("RightSide"));
+    if (prog == "Mode 1")           datah=0b01111111;
+    if (prog == "Mode 2")           datah=0b10111111;
+    if (prog == "Mode 3")           datah=0b11011111;
+    if (prog == "Cruise Mode")      datah=0b11101111;
+    if (prog == "Rear Left Arrow")  datah=0b11110111;
+    if (prog == "Rear Right Arrow") datah=0b11111011;
+    if (prog == "Take Downs")       datah=0b11111101;
   }
-  
-  /*
-  if (LEDvalue == "1")
-  {
-    writeLED(true);
-    server.send(200, "text/html", INDEX_HTML);
+
+ 
+  if (webServer.hasArg("RightSide")) {
+    Serial.print("RightSide= "); Serial.println(webServer.arg("RightSide"));
+    C1 = webServer.arg("RightSide").toInt();    
   }
-  else if (LEDvalue == "0")
-  {
-    writeLED(false);
-    server.send(200, "text/html", INDEX_HTML);
+  else C1=0;
+
+  if (webServer.hasArg("LeftSide")) {
+    Serial.print("LeftSide= "); Serial.println(webServer.arg("LeftSide"));
+    C2 = webServer.arg("LeftSide").toInt();    
   }
-  */
+  else C2=0;
+
+  if (webServer.hasArg("Flashing")) {
+    Serial.print("Flashing= "); Serial.println(webServer.arg("Flashing"));
+    C3 = webServer.arg("Flashing").toInt();    
+  }
+  else C3=0;
+
+  if (webServer.hasArg("LowPower")) {
+    Serial.print("LowPower= "); Serial.println(webServer.arg("LowPower"));
+    C4 = webServer.arg("LowPower").toInt();    
+  }
+  else C4=0;
+
+  if (webServer.hasArg("FlashTD")) {
+    Serial.print("FlashTD= "); Serial.println(webServer.arg("FlashTD"));
+    C5 = webServer.arg("FlashTD").toInt();    
+  }
+  else C5=0;
+
+  if (webServer.hasArg("DisableFront")) {
+    Serial.print("DisableFront= "); Serial.println(webServer.arg("DisableFront"));
+    C6 = webServer.arg("DisableFront").toInt();    
+  }
+  else C6=0;
+
+  if (webServer.hasArg("DisableRear")) {
+    Serial.print("DisableRear= "); Serial.println(webServer.arg("DisableRear"));
+    C7 = webServer.arg("DisableRear").toInt();    
+  }
+  else C7=0;
+
+  if (webServer.hasArg("ProgramMode")) {
+    Serial.print("ProgramMode= "); Serial.println(webServer.arg("ProgramMode"));
+    C8 = webServer.arg("ProgramMode").toInt();    
+  }
+  else C8=0;
+
+  datah = datah & ~C1;
+  datal = C2*128 + C3*64 + C4*32 + C5*16 + C6*8 + C7*4 + C8*2;
+  datal = ~byte(datal);
+  writeRegister(datah, datal);
 }
