@@ -1,27 +1,41 @@
 ![In progress](https://img.shields.io/badge/status-in%20progress-orange.svg)
 
+![](doc/torrent.jpg)
+
 # Purpose
 The purpose of this project is to create a Wifi controller for an orange Axixtech Torrent Led Light Bar.  
 
-![](torrent.jpg)
+The ESP8266 micro-controller creates a Wifi access point.  
+When connected to it, the user is redirected to a web page where he can change the illumination mode.  
+
+![](doc/sc1.jpeg)  
+
+![](doc/sc2.png)
 
 # Realisation
 
-According to [the manual](../master/TORRENT%20Lightbar%20Operation%20Manual.pdf) the wiring is extremely simple.  
+According to [the manual](../master/doc/TORRENT%20Lightbar%20Operation%20Manual.pdf) the wiring is extremely simple.  
 To select a mode, one should just connect one of the wires to 12V.  
+Therefore, the system will connect the different wires to 12V using transistors according to the output of a shift registers controlled by a web page.  
 
-![](wiring.jpg).
+![](doc/wiring.jpg).
+
+## Code
+
+The ESP8266 code contains the HTML page, therefore all the code is in one file [TorrentBar.ino](../master/TorrentBar/TorrentBar.ino).  
+The webpage is also available in the file [TorrentBar.html](../master/doc/TorrentBar.html) for testing purposes.  
 
 ## Electronics
 
 The circuit is rather simple, based on Darlington NPN transistor arrays and shift registers.  
+The car battery supplies the 12V, which is reduced to 5V using a LM7805 voltage regulator.  
+The 3.3V is either supplied by a LD1117V33 regulator (optional) or by the regulator located on the ESP8266 D1 Mini board.  
+
 [My EDA project can be found here](https://easyeda.com/arnaud.dessein/torrent-light-bar)  
 
 ![](https://image.easyeda.com/histories/842fc65e87f74eb69158350fe2f58f6e.png)  
+
 ![](https://image.easyeda.com/histories/a20f3e8650d344d2a72c066444794c6b.png)  
 
-## Code
 
-The ESP8266 will behave as an access point.
-Once connected to it, the user can change the flashing modes on a web page. 
-I will probably get inspiration from [this page](https://circuits4you.com/2016/12/16/esp8266-web-server-html/).
+
