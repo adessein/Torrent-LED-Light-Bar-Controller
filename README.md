@@ -17,8 +17,8 @@ To select a mode, one should just connect one of the wires to 12V.
 The circuit is rather simple, based on Darlington NPN transistor arrays and shift registers.  
 [My EDA project can be found here](https://easyeda.com/arnaud.dessein/torrent-light-bar)  
 
-![](https://image.easyeda.com/histories/0bb19d9765f84e8ca09aadaa262d7e98.png)  
-![](https://image.easyeda.com/histories/1ee4a7d05cbd480481dc6c2137dd454d.png)  
+![](https://image.easyeda.com/histories/842fc65e87f74eb69158350fe2f58f6e.png)  
+![](https://image.easyeda.com/histories/a20f3e8650d344d2a72c066444794c6b.png)  
 
 ## Code
 

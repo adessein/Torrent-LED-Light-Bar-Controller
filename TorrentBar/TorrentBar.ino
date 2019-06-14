@@ -107,29 +107,22 @@ input:checked + .slider:before {
 }
 </style>
 
-<!-- https://stackoverflow.com/a/10420584/6863846 -->
-<input type="hidden" name="action" id="action" />
-
-<script language="javascript" type="text/javascript">
-  $(document).ready(function () {
-    //when a submit button is clicked, put its name into the action hidden field
-    $(":submit").click(function () { $("#action").val(this.name); $(this).closest("form").submit();});
-  });
-</script>
 </head>
 
 <body>
 
 <form>
 
+<input type="hidden" name="user" value='1' />
+
 <h2>Program selection</h2>
-<p><input type="submit" class="bttn" value="Mode 1" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Mode 2" name="prog" /></p>
+<p><input type="submit" class="bttn" value="Mode 1" name="prog""/></p>
+<p><input type="submit" class="bttn" value="Mode 2" name="prog""/></p>
 <p><input type="submit" class="bttn" value="Mode 3" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Cruise mode" name="prog" /></p>
+<p><input type="submit" class="bttn" value="Cruise Mode" name="prog" /></p>
 <p><input type="submit" class="bttn" value="Rear Left Arrow" name="prog" /></p>
 <p><input type="submit" class="bttn" value="Rear Right Arrow" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Take Dowmns" name="prog" /></p>
+<p><input type="submit" class="bttn" value="Take Downs" name="prog" /></p>
 
 <h2>Modifiers</h2>
 
@@ -201,6 +194,7 @@ Program mode
 
 </body>
 </html> 
+ 
 
 )=====";
 
@@ -273,70 +267,32 @@ void writeRegister(byte bh, byte bl) {
 void handleSubmit(){
   Serial.println("handleSubmit");
 
-  if (webServer.hasArg("prog"))  {
-    String prog = webServer.arg("prog");
-    Serial.print("Prog= "); Serial.println(prog);
-
-    if (prog == "Mode 1")           datah=0b01111111;
-    if (prog == "Mode 2")           datah=0b10111111;
-    if (prog == "Mode 3")           datah=0b11011111;
-    if (prog == "Cruise Mode")      datah=0b11101111;
-    if (prog == "Rear Left Arrow")  datah=0b11110111;
-    if (prog == "Rear Right Arrow") datah=0b11111011;
-    if (prog == "Take Downs")       datah=0b11111101;
+  if (webServer.hasArg("user"))  {
+    if (webServer.hasArg("prog"))  {
+      String prog = webServer.arg("prog");
+      Serial.print("Prog= "); Serial.println(prog);
+  
+      if (prog == "Mode 1")           datah=0b01111111;
+      if (prog == "Mode 2")           datah=0b10111111;
+      if (prog == "Mode 3")           datah=0b11011111;
+      if (prog == "Cruise Mode")      datah=0b11101111;
+      if (prog == "Rear Left Arrow")  datah=0b11110111;
+      if (prog == "Rear Right Arrow") datah=0b11111011;
+      if (prog == "Take Downs")       datah=0b11111101;
+    }
+  
+    C1 = webServer.hasArg("RightSide")    ? 1:0;
+    C2 = webServer.hasArg("LeftSide")     ? 1:0;
+    C3 = webServer.hasArg("Flashing")     ? 1:0;
+    C4 = webServer.hasArg("LowPower")     ? 1:0;
+    C5 = webServer.hasArg("FlashTD")      ? 1:0;
+    C6 = webServer.hasArg("DisableFront") ? 1:0;
+    C7 = webServer.hasArg("DisableRear")  ? 1:0;  
+    C8 = webServer.hasArg("ProgramMode")  ? 1:0;  
+  
+    datah = datah & ~C1;
+    datal = C2*128 + C3*64 + C4*32 + C5*16 + C6*8 + C7*4 + C8*2;
+    datal = ~byte(datal);
+    writeRegister(datah, datal);
   }
-
- 
-  if (webServer.hasArg("RightSide")) {
-    Serial.print("RightSide= "); Serial.println(webServer.arg("RightSide"));
-    C1 = webServer.arg("RightSide").toInt();    
-  }
-  else C1=0;
-
-  if (webServer.hasArg("LeftSide")) {
-    Serial.print("LeftSide= "); Serial.println(webServer.arg("LeftSide"));
-    C2 = webServer.arg("LeftSide").toInt();    
-  }
-  else C2=0;
-
-  if (webServer.hasArg("Flashing")) {
-    Serial.print("Flashing= "); Serial.println(webServer.arg("Flashing"));
-    C3 = webServer.arg("Flashing").toInt();    
-  }
-  else C3=0;
-
-  if (webServer.hasArg("LowPower")) {
-    Serial.print("LowPower= "); Serial.println(webServer.arg("LowPower"));
-    C4 = webServer.arg("LowPower").toInt();    
-  }
-  else C4=0;
-
-  if (webServer.hasArg("FlashTD")) {
-    Serial.print("FlashTD= "); Serial.println(webServer.arg("FlashTD"));
-    C5 = webServer.arg("FlashTD").toInt();    
-  }
-  else C5=0;
-
-  if (webServer.hasArg("DisableFront")) {
-    Serial.print("DisableFront= "); Serial.println(webServer.arg("DisableFront"));
-    C6 = webServer.arg("DisableFront").toInt();    
-  }
-  else C6=0;
-
-  if (webServer.hasArg("DisableRear")) {
-    Serial.print("DisableRear= "); Serial.println(webServer.arg("DisableRear"));
-    C7 = webServer.arg("DisableRear").toInt();    
-  }
-  else C7=0;
-
-  if (webServer.hasArg("ProgramMode")) {
-    Serial.print("ProgramMode= "); Serial.println(webServer.arg("ProgramMode"));
-    C8 = webServer.arg("ProgramMode").toInt();    
-  }
-  else C8=0;
-
-  datah = datah & ~C1;
-  datal = C2*128 + C3*64 + C4*32 + C5*16 + C6*8 + C7*4 + C8*2;
-  datal = ~byte(datal);
-  writeRegister(datah, datal);
 }

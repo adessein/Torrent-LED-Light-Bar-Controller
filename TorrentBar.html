@@ -72,29 +72,22 @@ input:checked + .slider:before {
 }
 </style>
 
-<!-- https://stackoverflow.com/a/10420584/6863846 -->
-<input type="hidden" name="action" id="action" />
-
-<script language="javascript" type="text/javascript">
-  $(document).ready(function () {
-    //when a submit button is clicked, put its name into the action hidden field
-    $(":submit").click(function () { $("#action").val(this.name); $(this).closest("form").submit();});
-  });
-</script>
 </head>
 
 <body>
 
 <form>
 
+<input type="hidden" name="user" value='1' />
+
 <h2>Program selection</h2>
 <p><input type="submit" class="bttn" value="Mode 1" name="prog" /></p>
 <p><input type="submit" class="bttn" value="Mode 2" name="prog" /></p>
 <p><input type="submit" class="bttn" value="Mode 3" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Cruise mode" name="prog" /></p>
+<p><input type="submit" class="bttn" value="Cruise Mode" name="prog" /></p>
 <p><input type="submit" class="bttn" value="Rear Left Arrow" name="prog" /></p>
 <p><input type="submit" class="bttn" value="Rear Right Arrow" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Take Dowmns" name="prog" /></p>
+<p><input type="submit" class="bttn" value="Take Downs" name="prog" /></p>
 
 <h2>Modifiers</h2>
 
@@ -124,10 +117,10 @@ Enable flashing
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="HighPower" onClick="this.form.submit()" value='1' {C4}>
+  <input type="checkbox" name="LowPower" onClick="this.form.submit()" value='1' {C4}>
   <span class="slider round"></span>
 </label>
-High power
+Low power
 </p>
 
 <p>
@@ -148,10 +141,18 @@ Disable front lights
 
 <p>
 <label class="switch">
-  <input type="checkbox" name="DisableR" onClick="this.form.submit()" value='1' {C7}>
+  <input type="checkbox" name="DisableRear" onClick="this.form.submit()" value='1' {C7}>
   <span class="slider round"></span>
 </label>
-Disable read lights
+Disable rear lights
+</p>
+
+<p>
+<label class="switch">
+  <input type="checkbox" name="ProgramMode" onClick="this.form.submit()" value='1' {C8}>
+  <span class="slider round"></span>
+</label>
+Program mode
 </p>
 
 </form>
