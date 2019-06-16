@@ -5,17 +5,32 @@
  *  Arnaud DESSEIN
  */
  
-/*  Documentation
+/*  # Documentation
+ *
+ *  ## Captive portal
  *  https://github.com/ojack/ESP8266-captive-portal-webserver/blob/master/captivePortalFileServer.ino
  *  https://gist.github.com/bbx10/5a2885a700f30af75fc5
  *  https://gist.github.com/bbx10/667e3d4f5f2c0831d00b
- *  https://onlinestringtools.com/escape-string
+ * 
+ *  ## Javascript
+ * 
+ * 
+ *  ## Filesystem
+ *  https://steve.fi/Hardware/d1-flash/
+ *  
+ *  # Requirements
+ *  Arduino ESP8266 filesystem uploader
+ *  https://github.com/esp8266/arduino-esp8266fs-plugin
+ *  
  */
  
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <FS.h>
+
+String index_str_orig;
 
 const byte DNS_PORT = 53;
 const char *ssid = "Torrent LED Bar";
@@ -32,176 +47,16 @@ ESP8266WebServer webServer(80);
 
 short C1, C2, C3, C4, C5, C6, C7, C8;
 
-const char index_page[] = R"=====(
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8" />
-<style>
-body {
-  font-family: Sans-serif;
-}
-
-input[class="bttn"],p{
-    font-size:24px;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-.switch input { 
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-  background-color: #ca2222;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #2ab934;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-</style>
-
-</head>
-
-<body>
-
-<form>
-
-<input type="hidden" name="user" value='1' />
-
-<h2>Program selection</h2>
-<p><input type="submit" class="bttn" value="Mode 1" name="prog""/></p>
-<p><input type="submit" class="bttn" value="Mode 2" name="prog""/></p>
-<p><input type="submit" class="bttn" value="Mode 3" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Cruise Mode" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Rear Left Arrow" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Rear Right Arrow" name="prog" /></p>
-<p><input type="submit" class="bttn" value="Take Downs" name="prog" /></p>
-
-<h2>Modifiers</h2>
-
-<p>
-<label class="switch">
-  <input type="checkbox" name="RightSide" onClick="this.form.submit()" value='1' {C1}>
-  <span class="slider round"></span>
-</label>
-Enable right-side alley lights
-</p>
-
-<p>
-<label class="switch">
-  <input type="checkbox" name="LeftSide" onClick="this.form.submit()" value='1' {C2}>
-  <span class="slider round"></span>
-</label>
-Enable left-side alley lights
-</p>
-
-<p>
-<label class="switch">
-  <input type="checkbox" name="Flashing" onClick="this.form.submit()" value='1' {C3}>
-  <span class="slider round"></span>
-</label>
-Enable flashing
-</p>
-
-<p>
-<label class="switch">
-  <input type="checkbox" name="LowPower" onClick="this.form.submit()" value='1' {C4}>
-  <span class="slider round"></span>
-</label>
-Low power
-</p>
-
-<p>
-<label class="switch">
-  <input type="checkbox" name="FlashTD" onClick="this.form.submit()" value='1' {C5}>
-  <span class="slider round"></span>
-</label>
-Flash TDs and alleys
-</p>
-
-<p>
-<label class="switch">
-  <input type="checkbox" name="DisableFront" onClick="this.form.submit()" value='1' {C6}>
-  <span class="slider round"></span>
-</label>
-Disable front lights
-</p>
-
-<p>
-<label class="switch">
-  <input type="checkbox" name="DisableRear" onClick="this.form.submit()" value='1' {C7}>
-  <span class="slider round"></span>
-</label>
-Disable rear lights
-</p>
-
-<p>
-<label class="switch">
-  <input type="checkbox" name="ProgramMode" onClick="this.form.submit()" value='1' {C8}>
-  <span class="slider round"></span>
-</label>
-Program mode
-</p>
-
-</form>
-
-</body>
-</html> 
- 
-
-)=====";
-
 void setup(){
   Serial.begin(115200);
   Serial.println("=== Torrent LED Bar ===");
   Serial.println("Starting ...");
+  
+  SPIFFS.begin();
+  File f = SPIFFS.open("/TorrentBar.html", "r");
+  while (f.available()){
+    index_str_orig += char(f.read());
+  }
   
   C1=C2=C3=C4=C5=C6=C7=0;
 
@@ -224,7 +79,7 @@ void setup(){
   Serial.println("OK !");
 
   Serial.print("Web server... ");
-  //webServer.on("/", handleRoot);
+  webServer.on("/jquery.min.js", sendjQuery);
   webServer.onNotFound(handleRoot);
   webServer.begin();
   Serial.println("OK !");
@@ -235,15 +90,17 @@ void loop() {
   webServer.handleClient();
 }
 
-void handleRoot() {  
-  Serial.println("Processing request... ");
-  handleSubmit();
-  sendIndex();
+
+void sendjQuery(){
+  Serial.println("Sending jQuery... ");
+  File f = SPIFFS.open("/jquery.min.js", "r");
+  webServer.streamFile(f, "application/javascript");
+  f.close();
 }
 
 void sendIndex(){
   Serial.println("Sending index page... ");
-  String index_str(index_page);
+  String index_str(index_str_orig);
   index_str.replace("{C1}",C1?"checked":"");
   index_str.replace("{C2}",C2?"checked":"");
   index_str.replace("{C3}",C3?"checked":"");
@@ -295,4 +152,11 @@ void handleSubmit(){
     datal = ~byte(datal);
     writeRegister(datah, datal);
   }
+
+}
+
+void handleRoot() {  
+  Serial.println("Processing request... ");
+  handleSubmit();
+  sendIndex();
 }

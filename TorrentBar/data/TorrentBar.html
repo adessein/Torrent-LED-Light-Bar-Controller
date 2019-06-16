@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8" />
+    <title>Torrent LED Light Bar control</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="jquery.min.js"></script>
+    <script language="javascript" type="text/javascript">
+      $(function(){
+        $("#mode").change(function(){
+          if($(this)[0].value=="Mode 1"){
+            $(".mode").hide();
+            $(".mode1").show();
+          }
+          if($(this)[0].value=="Mode 2"){
+            $(".mode").hide();
+            $(".mode2").show();
+            $(".lightlist").html( $("#lightlist").html() );
+          }
+          if($(this)[0].value=="Mode 3"){
+            $(".mode").hide();
+            $(".mode3").show();
+            $(".lightlist").html( $("#lightlist").html() );
+          }
+          if($(this)[0].value=="Cruise"){
+            $(".mode").hide();
+            $(".cruisemode").show();
+          }
+        });
+        $("#flash").change(function(){
+          if($(this)[0].value>3 && $(this)[0].value<12){
+            $(".crosspattern").show();
+          }
+          else
+          {
+            $(".crosspattern").hide();
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <header>Torrent LED Light Bar control</header>
+    <form>
+      <section>
+        <input type="hidden" name="user" value='1' />
+        <div>
+          <fieldset class="fieldset-auto-width">
+            <legend>Mode selection</legend>
+            <p>
+              <label>Mode</label>
+              <select id="mode">
+                <option value="Mode 1">Flashing</option>
+                <option value="Mode 2">Steady 1</option>
+                <option value="Mode 3">Steady 2</option>
+                <option value="Cruise">Cruise Mode</option>
+              </select>
+            </p>
+          </fieldset>
+        </div>
+        <!-- Mode 1 -->
+        <div class="mode mode1">
+          <fieldset class="fieldset-auto-width">
+            <legend>Flash pattern</legend>
+            <p>
+              <label>Pattern</label>
+              <select id="flash">
+                <option value=0>Outside-In Single</option>
+                <option value=1>Outside-In Ultra</option>
+                <option value=2>Side-by-Side Single</option>
+                <option value=3>Side-by-Side Ultra</option>
+                <option value=4>Single (split)</option>
+                <option value=5>Double (split)</option>
+                <option value=6>Quad (split)</option>
+                <option value=7>Quint (split)</option>
+                <option value=8>Mega (split)</option>
+                <option value=9>Ultra (split)</option>
+                <option value=10>Single-Quad (split)</option>
+                <option value=11>Single H/L (split)</option>
+                <option value=12>Single (all)</option>
+                <option value=13>Double (all)</option>
+                <option value=14>Quad (all)</option>
+                <option value=15>Quint (all)</option>
+                <option value=16>Mega (all)</option>
+                <option value=17>Ultra (all)</option>
+                <option value=18>Single-Quad (all)</option>
+                <option value=19>Single H/L (all)</option>
+              </select>
+            </p>
+            <div class="mode crosspattern initiallyHidden">
+              <p>
+                <label class="switch">
+                  <input type="checkbox" name="CrossPattern" value='1' {C1}>
+                  <span class="slider round"></span>
+                </label>
+                Cross pattern
+              </p>
+            </div>
+          </fieldset>
+        </div>
+        <datalist id="lightlist">
+            <option value="0">Steady</option>
+            <option value="1">Single Slow (split)</option>
+            <option value="2">Single Mid (split)</option>
+            <option value="3">Single Fast (split)</option>
+            <option value="4">Double (split)</option>
+            <option value="5">Double (split)</option>
+            <option value="6">Quint (split)</option>
+            <option value="7">Ultra (split)</option>
+            <option value="8">Single-Quad (split)</option>
+            <option value="9">Single H/L (split)</option>
+            <option value="10">Random</option>
+            <option value="11">Off</option>
+            <option value="12">Single Slow (all)</option>
+            <option value="13">Single Mid (all)</option>
+            <option value="14">Single Fast (all)</option>
+            <option value="15">Double (all)</option>
+            <option value="16">Double (all)</option>
+            <option value="17">Quint (all)</option>
+            <option value="18">Ultra (all)</option>
+            <option value="19">Single-Quad (all)</option>
+            <option value="20">Single H/L (all)</option>
+        </datalist>
+        
+        <!-- Mode 2 -->
+        <div class="mode mode2 mode3 initiallyHidden">       
+          <fieldset class="fieldset-auto-width">
+            <legend>Lighting pattern</legend>
+            <table>
+              <tr>
+                <th>Pair 1</th>
+                <th><select name="lp1" class="lightlist"></select></th>
+              </tr>
+              <tr>
+                <th>Pair 2</th>
+                <th><select name="lp2" class="lightlist"></select></th>
+              </tr>
+              <tr>
+                <th>Pair 3</th>
+                <th><select name="lp3" class="lightlist"></select></th>
+              </tr>
+              <tr>
+                <th>Pair 4</th>
+                <th><select name="lp4" class="lightlist"></select></th>
+              </tr>
+              <tr>
+                <th>Pair 5</th>
+                <th><select name="lp5" class="lightlist"></select></th>
+              </tr>
+              <tr>
+                <th>Pair 6</th>
+                <th><select name="lp6" class="lightlist"></select></th>
+              </tr>
+            </table>
+            <br />
+            <input type="button" value="Program">
+          </fieldset>
+        </div>
+        <!-- Traffic arrows -->
+        <div class="mode mode1 mode2 cruisemode">
+          <fieldset class="fieldset-auto-width">
+          <legend>Traffic arrow</legend>
+          <p>
+            <label>Mode</label>
+            <select id="arrows mode">
+              <option value="0">Off</option>
+              <option value="1">Left</option>
+              <option value="2">Right</option>
+              <option value="3">Center out</option>
+            </select>
+          </p>
+          <p>
+            <label>Traffic arrow pattern</label>
+            <select id="arrows pattern">
+              <option value="0">Sweep Single</option>
+              <option value="1">Sweep Double</option>
+              <option value="2">Sweep Triple</option>
+              <option value="3">Sweep Single End-Double</option>
+              <option value="4">Solid</option>
+              <option value="5">Solid End-Double</option>
+              <option value="6">Solid Chaser</option>
+              <option value="7">Solid Fade</option>
+              <option value="8">Blink Double</option>
+              <option value="9">Blink Triple</option>
+              <option value="10">Blink Solid</option>
+            </select>
+          </p>
+          <input type="button" value="Flashing TDs & Alleys">
+        </div>
+      </section>
+      <section>
+        <h1>Modifiers</h1>
+        <p>
+          <label class="switch">
+            <input type="checkbox" name="RightSide" onClick="this.form.submit()" value='1' {C1}>
+            <span class="slider round"></span>
+          </label>
+          Enable right-side alley lights
+        </p>
+        <p>
+          <label class="switch">
+            <input type="checkbox" name="LeftSide" onClick="this.form.submit()" value='1' {C2}>
+            <span class="slider round"></span>
+          </label>
+          Enable left-side alley lights
+        </p>
+        <p>
+          <label class="switch">
+            <input type="checkbox" name="LowPower" onClick="this.form.submit()" value='1' {C4}>
+            <span class="slider round"></span>
+          </label>
+          Low power
+        </p>
+        <p>
+          <label class="switch">
+            <input type="checkbox" name="DisableFront" onClick="this.form.submit()" value='1' {C6}>
+            <span class="slider round"></span>
+          </label>
+          Disable front lights
+        </p>
+        <p>
+          <label class="switch">
+            <input type="checkbox" name="DisableRear" onClick="this.form.submit()" value='1' {C7}>
+            <span class="slider round"></span>
+          </label>
+          Disable rear lights
+        </p>
+        <p>
+          <label class="switch">
+            <input type="checkbox" name="TakeDowns" onClick="this.form.submit()" value='1' {C8}>
+            <span class="slider round"></span>
+          </label>
+          Take Downs
+        </p>
+      </section>
+    </form>
+  </body>
+</html> 
