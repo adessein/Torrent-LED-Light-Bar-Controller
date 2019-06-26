@@ -46,6 +46,7 @@ DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
 short C1, C2, C3, C4, C5, C6, C7, C8;
+short prog;
 
 void setup(){
   Serial.begin(115200);
@@ -80,7 +81,7 @@ void setup(){
 
   Serial.print("Web server... ");
   webServer.on("/jquery.min.js", sendjQuery);
-  webServer.onNotFound(handleRoot);
+  webServer.on("/TorrentBar.html", HTTP_POST, handlePost);
   webServer.begin();
   Serial.println("OK !");
 }
@@ -111,7 +112,7 @@ void sendIndex(){
   index_str.replace("{C8}",C8?"checked":"");
   webServer.send(200, "text/html", index_str.c_str());
 }
-
+  
 void writeRegister(byte bh, byte bl) {
   Serial.println("writeRegister");
   Serial.print(bh, BIN); Serial.print(" "); Serial.println(bl, BIN); 
@@ -121,14 +122,34 @@ void writeRegister(byte bh, byte bl) {
   digitalWrite(loadPin, HIGH);
 }
 
-void handleSubmit(){
-  Serial.println("handleSubmit");
+void handlePost(){
+  Serial.println("handlePost");
 
   if (webServer.hasArg("user"))  {
-    if (webServer.hasArg("prog"))  {
-      String prog = webServer.arg("prog");
+    if (webServer.hasArg("mode"))  {
+      
       Serial.print("Prog= "); Serial.println(prog);
   
+      switch(webServer.arg("mode")){
+        case 0:
+          Serial.println("Mode: flashing");
+          datah=0b01111111;
+          break;
+        case 1:
+          Serial.println("Mode: steady 1");
+          datah=0b10111111;
+          break;
+        case 2:
+          Serial.println("Mode: steady 2");
+          datah=0b11011111;
+        case 3:
+          Serial.println("Mode: cruise");
+          datah=0b11101111;
+          break;
+        default:
+          break;
+      }
+          
       if (prog == "Mode 1")           datah=0b01111111;
       if (prog == "Mode 2")           datah=0b10111111;
       if (prog == "Mode 3")           datah=0b11011111;

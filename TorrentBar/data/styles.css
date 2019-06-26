@@ -41,7 +41,7 @@ fieldset label {
     text-align: right;
 }
 
-input[class="bttn"],
+input[value="SEND"],
 p {
   font-size: 24px;
 }
