@@ -17,6 +17,7 @@
  * 
  *  ## Filesystem
  *  https://steve.fi/Hardware/d1-flash/
+ *  If errof while uploading, check that the serial termianl is closed
  *  
  *  # Requirements
  *  Arduino ESP8266 filesystem uploader
@@ -80,8 +81,11 @@ void setup(){
   Serial.println("OK !");
 
   Serial.print("Web server... ");
+  webServer.on("/", sendIndex);
   webServer.on("/jquery.min.js", sendjQuery);
-  webServer.on("/TorrentBar.html", HTTP_POST, handlePost);
+  webServer.on("/styles.css", sendCSS);
+  //webServer.on("/TorrentBar.html", HTTP_POST, handlePost);
+  webServer.on("/TorrentBar.html", HTTP_POST, dumpArgs);
   webServer.begin();
   Serial.println("OK !");
 }
@@ -98,6 +102,14 @@ void sendjQuery(){
   webServer.streamFile(f, "application/javascript");
   f.close();
 }
+
+void sendCSS(){
+  Serial.println("Sending CSS... ");
+  File f = SPIFFS.open("/styles.css", "r");
+  webServer.streamFile(f, "text/css");
+  f.close();
+}
+
 
 void sendIndex(){
   Serial.println("Sending index page... ");
@@ -122,7 +134,17 @@ void writeRegister(byte bh, byte bl) {
   digitalWrite(loadPin, HIGH);
 }
 
+void dumpArgs(){
+  for (int i=0; i<webServer.args(); i++){
+    Serial.print(webServer.argName(i));
+    Serial.print("=");
+    Serial.println(webServer.arg(i));
+  }
+}
+
+
 void handlePost(){
+/*
   Serial.println("handlePost");
 
   if (webServer.hasArg("user"))  {
@@ -172,12 +194,6 @@ void handlePost(){
     datal = C2*128 + C3*64 + C4*32 + C5*16 + C6*8 + C7*4 + C8*2;
     datal = ~byte(datal);
     writeRegister(datah, datal);
-  }
+  }*/
 
-}
-
-void handleRoot() {  
-  Serial.println("Processing request... ");
-  handleSubmit();
-  sendIndex();
 }
