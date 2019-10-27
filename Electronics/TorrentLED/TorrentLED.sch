@@ -1,0 +1,901 @@
+EESchema Schematic File Version 4
+LIBS:TorrentLED-cache
+EELAYER 26 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title "Wifi module for Torrent Led Light Bar"
+Date ""
+Rev ""
+Comp "https://github.com/adessein/Torrent-LED-Light-Bar-Controller"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L wemos_mini:WeMos_mini U1
+U 1 1 5DB46742
+P 1650 1500
+F 0 "U1" H 1650 2243 60  0000 C CNN
+F 1 "WeMos_mini" H 1650 2137 60  0000 C CNN
+F 2 "wemos_d1_mini:D1_mini_board" H 2200 800 60  0001 C CNN
+F 3 "http://www.wemos.cc/Products/d1_mini.html" H 1650 2031 60  0000 C CNN
+	1    1650 1500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR0101
+U 1 1 5DB468BD
+P 1100 1250
+F 0 "#PWR0101" H 1100 1000 50  0001 C CNN
+F 1 "Earth" H 1100 1100 50  0001 C CNN
+F 2 "" H 1100 1250 50  0001 C CNN
+F 3 "~" H 1100 1250 50  0001 C CNN
+	1    1100 1250
+	0    1    1    0   
+$EndComp
+$Comp
+L power:+5V #PWR0102
+U 1 1 5DB469B1
+P 1100 1150
+F 0 "#PWR0102" H 1100 1000 50  0001 C CNN
+F 1 "+5V" H 1115 1323 50  0000 C CNN
+F 2 "" H 1100 1150 50  0001 C CNN
+F 3 "" H 1100 1150 50  0001 C CNN
+	1    1100 1150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR0103
+U 1 1 5DB46A64
+P 2200 1150
+F 0 "#PWR0103" H 2200 1000 50  0001 C CNN
+F 1 "+3.3V" V 2215 1278 50  0000 L CNN
+F 2 "" H 2200 1150 50  0001 C CNN
+F 3 "" H 2200 1150 50  0001 C CNN
+	1    2200 1150
+	0    1    1    0   
+$EndComp
+Text GLabel 2200 1450 2    50   Output ~ 0
+OSR_DATA
+Text GLabel 2200 1350 2    50   Output ~ 0
+CLK
+Text GLabel 2200 1250 2    50   Output ~ 0
+LATCH_OUT
+$Comp
+L 74xx:74HC595 U3
+U 1 1 5DB46CA6
+P 1800 5650
+F 0 "U3" H 1800 6428 50  0000 C CNN
+F 1 "74HC595" H 1800 6337 50  0000 C CNN
+F 2 "Package_DIP:DIP-16_W7.62mm_Socket" H 1800 5650 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/sn74hc595.pdf" H 1800 5650 50  0001 C CNN
+	1    1800 5650
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR08
+U 1 1 5DB46D6F
+P 1800 6400
+F 0 "#PWR08" H 1800 6150 50  0001 C CNN
+F 1 "Earth" H 1800 6250 50  0001 C CNN
+F 2 "" H 1800 6400 50  0001 C CNN
+F 3 "~" H 1800 6400 50  0001 C CNN
+	1    1800 6400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_Array:ULN2803A U5
+U 1 1 5DB47095
+P 2800 5450
+F 0 "U5" H 2800 6017 50  0000 C CNN
+F 1 "ULN2803A" H 2800 5926 50  0000 C CNN
+F 2 "Package_DIP:DIP-18_W7.62mm_Socket" H 2850 4800 50  0001 L CNN
+F 3 "http://www.ti.com/lit/ds/symlink/uln2803a.pdf" H 2900 5250 50  0001 C CNN
+	1    2800 5450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2150 1150 2200 1150
+Wire Wire Line
+	2150 1250 2200 1250
+Wire Wire Line
+	2150 1350 2200 1350
+Wire Wire Line
+	2150 1450 2200 1450
+Wire Wire Line
+	1150 1150 1100 1150
+Wire Wire Line
+	1100 1250 1150 1250
+Wire Wire Line
+	2200 5250 2400 5250
+Wire Wire Line
+	2400 5350 2200 5350
+Wire Wire Line
+	2200 5450 2400 5450
+Wire Wire Line
+	2400 5550 2200 5550
+Wire Wire Line
+	2200 5650 2400 5650
+Wire Wire Line
+	2400 5750 2200 5750
+Wire Wire Line
+	2200 5850 2400 5850
+Wire Wire Line
+	2400 5950 2200 5950
+Wire Wire Line
+	1800 6350 1800 6400
+$Comp
+L power:Earth #PWR012
+U 1 1 5DB4A0E5
+P 2800 6200
+F 0 "#PWR012" H 2800 5950 50  0001 C CNN
+F 1 "Earth" H 2800 6050 50  0001 C CNN
+F 2 "" H 2800 6200 50  0001 C CNN
+F 3 "~" H 2800 6200 50  0001 C CNN
+	1    2800 6200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 6150 2800 6200
+$Comp
+L power:+3.3V #PWR06
+U 1 1 5DB4A4A7
+P 1650 4750
+F 0 "#PWR06" H 1650 4600 50  0001 C CNN
+F 1 "+3.3V" H 1665 4923 50  0000 C CNN
+F 2 "" H 1650 4750 50  0001 C CNN
+F 3 "" H 1650 4750 50  0001 C CNN
+	1    1650 4750
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:Earth #PWR010
+U 1 1 5DB4A510
+P 1950 4750
+F 0 "#PWR010" H 1950 4500 50  0001 C CNN
+F 1 "Earth" H 1950 4600 50  0001 C CNN
+F 2 "" H 1950 4750 50  0001 C CNN
+F 3 "~" H 1950 4750 50  0001 C CNN
+	1    1950 4750
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:C_Small C2
+U 1 1 5DB4A733
+P 1800 4750
+F 0 "C2" H 1892 4796 50  0000 L CNN
+F 1 "0.1u" H 1892 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm" H 1800 4750 50  0001 C CNN
+F 3 "~" H 1800 4750 50  0001 C CNN
+	1    1800 4750
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1950 4750 1900 4750
+Wire Wire Line
+	1700 4750 1650 4750
+Wire Wire Line
+	1800 5050 1700 5050
+Wire Wire Line
+	1700 5050 1700 4750
+Connection ~ 1700 4750
+Text GLabel 1350 5450 0    50   Input ~ 0
+CLK
+Wire Wire Line
+	1350 5450 1400 5450
+Text GLabel 1350 5750 0    50   Input ~ 0
+LATCH_OUT
+$Comp
+L power:+3.3V #PWR02
+U 1 1 5DB4E2DC
+P 1200 5550
+F 0 "#PWR02" H 1200 5400 50  0001 C CNN
+F 1 "+3.3V" V 1215 5678 50  0000 L CNN
+F 2 "" H 1200 5550 50  0001 C CNN
+F 3 "" H 1200 5550 50  0001 C CNN
+	1    1200 5550
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1200 5550 1400 5550
+Wire Wire Line
+	1400 5750 1350 5750
+$Comp
+L power:Earth #PWR04
+U 1 1 5DB4F2E8
+P 1350 5850
+F 0 "#PWR04" H 1350 5600 50  0001 C CNN
+F 1 "Earth" H 1350 5700 50  0001 C CNN
+F 2 "" H 1350 5850 50  0001 C CNN
+F 3 "~" H 1350 5850 50  0001 C CNN
+	1    1350 5850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1350 5850 1400 5850
+$Comp
+L 74xx:74HC595 U2
+U 1 1 5DB52A3D
+P 1800 3400
+F 0 "U2" H 1800 4178 50  0000 C CNN
+F 1 "74HC595" H 1800 4087 50  0000 C CNN
+F 2 "Package_DIP:DIP-16_W7.62mm_Socket" H 1800 3400 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/sn74hc595.pdf" H 1800 3400 50  0001 C CNN
+	1    1800 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR07
+U 1 1 5DB52A44
+P 1800 4150
+F 0 "#PWR07" H 1800 3900 50  0001 C CNN
+F 1 "Earth" H 1800 4000 50  0001 C CNN
+F 2 "" H 1800 4150 50  0001 C CNN
+F 3 "~" H 1800 4150 50  0001 C CNN
+	1    1800 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x08 J1
+U 1 1 5DB52A4A
+P 3950 3300
+F 0 "J1" H 4030 3292 50  0000 L CNN
+F 1 "Screw_Terminal_01x08" H 4030 3201 50  0000 L CNN
+F 2 "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-8-5.0-H_1x08_P5.00mm_Horizontal" H 3950 3300 50  0001 C CNN
+F 3 "~" H 3950 3300 50  0001 C CNN
+	1    3950 3300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_Array:ULN2803A U4
+U 1 1 5DB52A51
+P 2800 3200
+F 0 "U4" H 2800 3767 50  0000 C CNN
+F 1 "ULN2803A" H 2800 3676 50  0000 C CNN
+F 2 "Package_DIP:DIP-18_W7.62mm_Socket" H 2850 2550 50  0001 L CNN
+F 3 "http://www.ti.com/lit/ds/symlink/uln2803a.pdf" H 2900 3000 50  0001 C CNN
+	1    2800 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2200 3000 2400 3000
+Wire Wire Line
+	2400 3100 2200 3100
+Wire Wire Line
+	2200 3200 2400 3200
+Wire Wire Line
+	2400 3300 2200 3300
+Wire Wire Line
+	2200 3400 2400 3400
+Wire Wire Line
+	2400 3500 2200 3500
+Wire Wire Line
+	2200 3600 2400 3600
+Wire Wire Line
+	2400 3700 2200 3700
+Wire Wire Line
+	1800 4100 1800 4150
+$Comp
+L power:Earth #PWR011
+U 1 1 5DB52A69
+P 2800 3950
+F 0 "#PWR011" H 2800 3700 50  0001 C CNN
+F 1 "Earth" H 2800 3800 50  0001 C CNN
+F 2 "" H 2800 3950 50  0001 C CNN
+F 3 "~" H 2800 3950 50  0001 C CNN
+	1    2800 3950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 3900 2800 3950
+$Comp
+L power:+3.3V #PWR05
+U 1 1 5DB52A70
+P 1650 2500
+F 0 "#PWR05" H 1650 2350 50  0001 C CNN
+F 1 "+3.3V" H 1665 2673 50  0000 C CNN
+F 2 "" H 1650 2500 50  0001 C CNN
+F 3 "" H 1650 2500 50  0001 C CNN
+	1    1650 2500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L power:Earth #PWR09
+U 1 1 5DB52A76
+P 1950 2500
+F 0 "#PWR09" H 1950 2250 50  0001 C CNN
+F 1 "Earth" H 1950 2350 50  0001 C CNN
+F 2 "" H 1950 2500 50  0001 C CNN
+F 3 "~" H 1950 2500 50  0001 C CNN
+	1    1950 2500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:C_Small C1
+U 1 1 5DB52A7C
+P 1800 2500
+F 0 "C1" H 1892 2546 50  0000 L CNN
+F 1 "0.1u" H 1892 2455 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm" H 1800 2500 50  0001 C CNN
+F 3 "~" H 1800 2500 50  0001 C CNN
+	1    1800 2500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1950 2500 1900 2500
+Wire Wire Line
+	1700 2500 1650 2500
+Wire Wire Line
+	1800 2800 1700 2800
+Wire Wire Line
+	1700 2800 1700 2500
+Connection ~ 1700 2500
+Text GLabel 1350 3000 0    50   Input ~ 0
+OSR_DATA
+Wire Wire Line
+	1350 3000 1400 3000
+Text GLabel 1350 3200 0    50   Input ~ 0
+CLK
+Wire Wire Line
+	1350 3200 1400 3200
+Text GLabel 1350 3500 0    50   Input ~ 0
+LATCH_OUT
+$Comp
+L power:+3.3V #PWR01
+U 1 1 5DB52A8D
+P 1200 3300
+F 0 "#PWR01" H 1200 3150 50  0001 C CNN
+F 1 "+3.3V" V 1215 3428 50  0000 L CNN
+F 2 "" H 1200 3300 50  0001 C CNN
+F 3 "" H 1200 3300 50  0001 C CNN
+	1    1200 3300
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1200 3300 1400 3300
+Wire Wire Line
+	1400 3500 1350 3500
+$Comp
+L power:Earth #PWR03
+U 1 1 5DB52A95
+P 1350 3600
+F 0 "#PWR03" H 1350 3350 50  0001 C CNN
+F 1 "Earth" H 1350 3450 50  0001 C CNN
+F 2 "" H 1350 3600 50  0001 C CNN
+F 3 "~" H 1350 3600 50  0001 C CNN
+	1    1350 3600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1350 3600 1400 3600
+Wire Wire Line
+	2200 3900 2200 4400
+Wire Wire Line
+	2200 4400 1150 4400
+Wire Wire Line
+	1150 4400 1150 5250
+Wire Wire Line
+	1150 5250 1400 5250
+$Comp
+L Device:R_Network08 RN1
+U 1 1 5DB56495
+P 3900 2400
+F 0 "RN1" V 3283 2400 50  0000 C CNN
+F 1 "10k" V 3374 2400 50  0000 C CNN
+F 2 "Resistor_THT:R_Array_SIP9" V 4375 2400 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/31509/csc.pdf" H 3900 2400 50  0001 C CNN
+	1    3900 2400
+	0    1    1    0   
+$EndComp
+$Comp
+L power:+12V #PWR015
+U 1 1 5DB56586
+P 4200 1850
+F 0 "#PWR015" H 4200 1700 50  0001 C CNN
+F 1 "+12V" H 4215 2023 50  0000 C CNN
+F 2 "" H 4200 1850 50  0001 C CNN
+F 3 "" H 4200 1850 50  0001 C CNN
+	1    4200 1850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4200 1850 4200 2000
+Wire Wire Line
+	3300 3000 3300 2000
+Wire Wire Line
+	3300 2000 3700 2000
+Connection ~ 3300 3000
+Wire Wire Line
+	3300 3000 3750 3000
+Wire Wire Line
+	3700 2100 3350 2100
+Wire Wire Line
+	3350 2100 3350 3100
+Connection ~ 3350 3100
+Wire Wire Line
+	3350 3100 3750 3100
+Wire Wire Line
+	3700 2200 3400 2200
+Wire Wire Line
+	3400 2200 3400 3200
+Connection ~ 3400 3200
+Wire Wire Line
+	3400 3200 3750 3200
+Wire Wire Line
+	3700 2300 3450 2300
+Wire Wire Line
+	3450 2300 3450 3300
+Connection ~ 3450 3300
+Wire Wire Line
+	3450 3300 3750 3300
+Wire Wire Line
+	3700 2400 3500 2400
+Wire Wire Line
+	3500 2400 3500 3400
+Connection ~ 3500 3400
+Wire Wire Line
+	3500 3400 3750 3400
+Wire Wire Line
+	3700 2500 3550 2500
+Wire Wire Line
+	3550 2500 3550 3500
+Connection ~ 3550 3500
+Wire Wire Line
+	3550 3500 3750 3500
+Wire Wire Line
+	3700 2600 3600 2600
+Wire Wire Line
+	3600 2600 3600 3600
+Connection ~ 3600 3600
+Wire Wire Line
+	3600 3600 3750 3600
+Wire Wire Line
+	3700 2700 3650 2700
+Wire Wire Line
+	3650 2700 3650 3700
+Connection ~ 3650 3700
+Wire Wire Line
+	3650 3700 3750 3700
+Wire Wire Line
+	4100 2000 4200 2000
+$Comp
+L Connector:Screw_Terminal_01x08 J2
+U 1 1 5DB88CF5
+P 4000 5550
+F 0 "J2" H 4080 5542 50  0000 L CNN
+F 1 "Screw_Terminal_01x08" H 4080 5451 50  0000 L CNN
+F 2 "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-8-5.0-H_1x08_P5.00mm_Horizontal" H 4000 5550 50  0001 C CNN
+F 3 "~" H 4000 5550 50  0001 C CNN
+	1    4000 5550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R_Network08 RN2
+U 1 1 5DB88D03
+P 3950 4650
+F 0 "RN2" V 3333 4650 50  0000 C CNN
+F 1 "10k" V 3424 4650 50  0000 C CNN
+F 2 "Resistor_THT:R_Array_SIP9" V 4425 4650 50  0001 C CNN
+F 3 "http://www.vishay.com/docs/31509/csc.pdf" H 3950 4650 50  0001 C CNN
+	1    3950 4650
+	0    1    1    0   
+$EndComp
+$Comp
+L power:+12V #PWR016
+U 1 1 5DB88D0A
+P 4250 4100
+F 0 "#PWR016" H 4250 3950 50  0001 C CNN
+F 1 "+12V" H 4265 4273 50  0000 C CNN
+F 2 "" H 4250 4100 50  0001 C CNN
+F 3 "" H 4250 4100 50  0001 C CNN
+	1    4250 4100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4250 4100 4250 4250
+Wire Wire Line
+	3350 5250 3350 4250
+Wire Wire Line
+	3350 4250 3750 4250
+Connection ~ 3350 5250
+Wire Wire Line
+	3350 5250 3800 5250
+Wire Wire Line
+	3750 4350 3400 4350
+Wire Wire Line
+	3400 4350 3400 5350
+Connection ~ 3400 5350
+Wire Wire Line
+	3400 5350 3800 5350
+Wire Wire Line
+	3750 4450 3450 4450
+Wire Wire Line
+	3450 4450 3450 5450
+Connection ~ 3450 5450
+Wire Wire Line
+	3450 5450 3800 5450
+Wire Wire Line
+	3750 4550 3500 4550
+Wire Wire Line
+	3500 4550 3500 5550
+Connection ~ 3500 5550
+Wire Wire Line
+	3500 5550 3800 5550
+Wire Wire Line
+	3750 4650 3550 4650
+Wire Wire Line
+	3550 4650 3550 5650
+Connection ~ 3550 5650
+Wire Wire Line
+	3550 5650 3800 5650
+Wire Wire Line
+	3750 4750 3600 4750
+Wire Wire Line
+	3600 4750 3600 5750
+Connection ~ 3600 5750
+Wire Wire Line
+	3600 5750 3800 5750
+Wire Wire Line
+	3750 4850 3650 4850
+Wire Wire Line
+	3650 4850 3650 5850
+Connection ~ 3650 5850
+Wire Wire Line
+	3650 5850 3800 5850
+Wire Wire Line
+	3750 4950 3700 4950
+Wire Wire Line
+	3700 4950 3700 5950
+Connection ~ 3700 5950
+Wire Wire Line
+	3700 5950 3800 5950
+Wire Wire Line
+	4150 4250 4250 4250
+Wire Wire Line
+	3200 5250 3350 5250
+Wire Wire Line
+	3200 5350 3400 5350
+Wire Wire Line
+	3200 5450 3450 5450
+Wire Wire Line
+	3200 5550 3500 5550
+Wire Wire Line
+	3200 5650 3550 5650
+Wire Wire Line
+	3200 5750 3600 5750
+Wire Wire Line
+	3200 5850 3650 5850
+Wire Wire Line
+	3200 5950 3700 5950
+Wire Wire Line
+	3200 3000 3300 3000
+Wire Wire Line
+	3200 3100 3350 3100
+Wire Wire Line
+	3200 3200 3400 3200
+Wire Wire Line
+	3200 3300 3450 3300
+Wire Wire Line
+	3200 3400 3500 3400
+Wire Wire Line
+	3200 3500 3550 3500
+Wire Wire Line
+	3200 3600 3600 3600
+Wire Wire Line
+	3200 3700 3650 3700
+$Comp
+L Regulator_Linear:LM7805_TO220 U6
+U 1 1 5DBBF5CB
+P 6700 1900
+F 0 "U6" H 6700 2142 50  0000 C CNN
+F 1 "LM7805_TO220" H 6700 2051 50  0000 C CNN
+F 2 "Package_TO_SOT_THT:TO-220-3_Vertical" H 6700 2125 50  0001 C CIN
+F 3 "http://www.fairchildsemi.com/ds/LM/LM7805.pdf" H 6700 1850 50  0001 C CNN
+	1    6700 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C3
+U 1 1 5DBBF64F
+P 6200 2000
+F 0 "C3" H 6292 2046 50  0000 L CNN
+F 1 "100n" H 6292 1955 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm" H 6200 2000 50  0001 C CNN
+F 3 "~" H 6200 2000 50  0001 C CNN
+	1    6200 2000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C5
+U 1 1 5DBBF6BB
+P 7200 2000
+F 0 "C5" H 7292 2046 50  0000 L CNN
+F 1 "100n" H 7292 1955 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm" H 7200 2000 50  0001 C CNN
+F 3 "~" H 7200 2000 50  0001 C CNN
+	1    7200 2000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP1_Small C8
+U 1 1 5DBBF77B
+P 7600 2050
+F 0 "C8" H 7691 2096 50  0000 L CNN
+F 1 "100u" H 7691 2005 50  0000 L CNN
+F 2 "Capacitor_THT:C_Radial_D6.3mm_H11.0mm_P2.50mm" H 7600 2050 50  0001 C CNN
+F 3 "~" H 7600 2050 50  0001 C CNN
+	1    7600 2050
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR019
+U 1 1 5DBC79C4
+P 6700 2400
+F 0 "#PWR019" H 6700 2150 50  0001 C CNN
+F 1 "Earth" H 6700 2250 50  0001 C CNN
+F 2 "" H 6700 2400 50  0001 C CNN
+F 3 "~" H 6700 2400 50  0001 C CNN
+	1    6700 2400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 1900 6200 1900
+Wire Wire Line
+	7000 1900 7200 1900
+Wire Wire Line
+	6200 2100 6200 2250
+Wire Wire Line
+	6200 2250 6700 2250
+Wire Wire Line
+	7200 2250 7200 2100
+Wire Wire Line
+	6700 2200 6700 2250
+Connection ~ 6700 2250
+Wire Wire Line
+	6700 2250 7200 2250
+Wire Wire Line
+	6700 2400 6700 2250
+Wire Wire Line
+	7200 1900 7600 1900
+Wire Wire Line
+	7600 1900 7600 1950
+Wire Wire Line
+	7600 2150 7600 2250
+Wire Wire Line
+	7600 2250 7200 2250
+Connection ~ 7200 2250
+Connection ~ 7200 1900
+Wire Notes Line
+	5950 1500 5950 2600
+Wire Notes Line
+	5950 2600 8250 2600
+Wire Notes Line
+	8250 2600 8250 1500
+Wire Notes Line
+	8250 1500 5950 1500
+Text Notes 6000 1600 0    50   ~ 0
+5V generation
+$Comp
+L power:+5V #PWR022
+U 1 1 5DBF3595
+P 7600 1900
+F 0 "#PWR022" H 7600 1750 50  0001 C CNN
+F 1 "+5V" H 7615 2073 50  0000 C CNN
+F 2 "" H 7600 1900 50  0001 C CNN
+F 3 "" H 7600 1900 50  0001 C CNN
+	1    7600 1900
+	1    0    0    -1  
+$EndComp
+Connection ~ 7600 1900
+$Comp
+L power:+12V #PWR017
+U 1 1 5DBF35BE
+P 6200 1900
+F 0 "#PWR017" H 6200 1750 50  0001 C CNN
+F 1 "+12V" H 6215 2073 50  0000 C CNN
+F 2 "" H 6200 1900 50  0001 C CNN
+F 3 "" H 6200 1900 50  0001 C CNN
+	1    6200 1900
+	1    0    0    -1  
+$EndComp
+Connection ~ 6200 1900
+$Comp
+L Regulator_Linear:LD1117S33TR_SOT223 U7
+U 1 1 5DBF36A0
+P 6700 3000
+F 0 "U7" H 6700 3242 50  0000 C CNN
+F 1 "LD1117S33TR_SOT223" H 6700 3151 50  0000 C CNN
+F 2 "Package_TO_SOT_THT:TO-220-3_Vertical" H 6700 3200 50  0001 C CNN
+F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/CD00000544.pdf" H 6800 2750 50  0001 C CNN
+	1    6700 3000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR018
+U 1 1 5DBF371C
+P 6200 3000
+F 0 "#PWR018" H 6200 2850 50  0001 C CNN
+F 1 "+5V" H 6215 3173 50  0000 C CNN
+F 2 "" H 6200 3000 50  0001 C CNN
+F 3 "" H 6200 3000 50  0001 C CNN
+	1    6200 3000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR021
+U 1 1 5DBF3747
+P 7200 3000
+F 0 "#PWR021" H 7200 2850 50  0001 C CNN
+F 1 "+3.3V" H 7215 3173 50  0000 C CNN
+F 2 "" H 7200 3000 50  0001 C CNN
+F 3 "" H 7200 3000 50  0001 C CNN
+	1    7200 3000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C6
+U 1 1 5DBF3892
+P 7200 3200
+F 0 "C6" H 7292 3246 50  0000 L CNN
+F 1 "10u" H 7292 3155 50  0000 L CNN
+F 2 "Capacitor_THT:C_Radial_D5.0mm_H11.0mm_P2.00mm" H 7200 3200 50  0001 C CNN
+F 3 "~" H 7200 3200 50  0001 C CNN
+	1    7200 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C_Small C4
+U 1 1 5DBF38E6
+P 6200 3200
+F 0 "C4" H 6292 3246 50  0000 L CNN
+F 1 "100n" H 6292 3155 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P2.50mm" H 6200 3200 50  0001 C CNN
+F 3 "~" H 6200 3200 50  0001 C CNN
+	1    6200 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6200 3400 6700 3400
+Wire Wire Line
+	7200 3400 7200 3300
+Wire Wire Line
+	6200 3300 6200 3400
+Wire Wire Line
+	6700 3300 6700 3400
+Connection ~ 6700 3400
+Wire Wire Line
+	6700 3400 7200 3400
+$Comp
+L power:Earth #PWR020
+U 1 1 5DB5A29A
+P 6700 3400
+F 0 "#PWR020" H 6700 3150 50  0001 C CNN
+F 1 "Earth" H 6700 3250 50  0001 C CNN
+F 2 "" H 6700 3400 50  0001 C CNN
+F 3 "~" H 6700 3400 50  0001 C CNN
+	1    6700 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP1_Small C7
+U 1 1 5DB5A3DB
+P 7550 3200
+F 0 "C7" H 7641 3246 50  0000 L CNN
+F 1 "100u" H 7641 3155 50  0000 L CNN
+F 2 "Capacitor_THT:C_Radial_D6.3mm_H11.0mm_P2.50mm" H 7550 3200 50  0001 C CNN
+F 3 "~" H 7550 3200 50  0001 C CNN
+	1    7550 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7000 3000 7200 3000
+Wire Wire Line
+	7200 3100 7200 3000
+Connection ~ 7200 3000
+Wire Wire Line
+	6200 3100 6200 3000
+Wire Wire Line
+	6400 3000 6200 3000
+Connection ~ 6200 3000
+Wire Wire Line
+	7200 3000 7550 3000
+Wire Wire Line
+	7550 3000 7550 3100
+Wire Wire Line
+	7550 3300 7550 3400
+Wire Wire Line
+	7550 3400 7200 3400
+Connection ~ 7200 3400
+$Comp
+L Device:LED D1
+U 1 1 5DB82458
+P 7800 3000
+F 0 "D1" H 7792 2745 50  0000 C CNN
+F 1 "LED" H 7792 2836 50  0000 C CNN
+F 2 "LED_THT:LED_D3.0mm" H 7800 3000 50  0001 C CNN
+F 3 "~" H 7800 3000 50  0001 C CNN
+	1    7800 3000
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R1
+U 1 1 5DB82543
+P 8000 3200
+F 0 "R1" H 8070 3246 50  0000 L CNN
+F 1 "68" H 8070 3155 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 7930 3200 50  0001 C CNN
+F 3 "~" H 8000 3200 50  0001 C CNN
+	1    8000 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7550 3000 7650 3000
+Connection ~ 7550 3000
+Wire Wire Line
+	7950 3000 8000 3000
+Wire Wire Line
+	8000 3000 8000 3050
+Wire Wire Line
+	8000 3350 8000 3400
+Wire Wire Line
+	8000 3400 7550 3400
+Connection ~ 7550 3400
+Wire Notes Line
+	5950 2700 8250 2700
+Wire Notes Line
+	8250 2700 8250 3600
+Wire Notes Line
+	8250 3600 5950 3600
+Wire Notes Line
+	5950 3600 5950 2700
+Text Notes 6000 2800 0    50   ~ 0
+3.3V generation
+$Comp
+L Connector:Screw_Terminal_01x02 J3
+U 1 1 5DB9822F
+P 4000 6350
+F 0 "J3" H 4080 6342 50  0000 L CNN
+F 1 "Screw_Terminal_01x02" H 4080 6251 50  0000 L CNN
+F 2 "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-5.0-H_1x02_P5.00mm_Horizontal" H 4000 6350 50  0001 C CNN
+F 3 "~" H 4000 6350 50  0001 C CNN
+	1    4000 6350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+12V #PWR013
+U 1 1 5DB982C5
+P 3800 6350
+F 0 "#PWR013" H 3800 6200 50  0001 C CNN
+F 1 "+12V" H 3815 6523 50  0000 C CNN
+F 2 "" H 3800 6350 50  0001 C CNN
+F 3 "" H 3800 6350 50  0001 C CNN
+	1    3800 6350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:Earth #PWR014
+U 1 1 5DB982FC
+P 3800 6450
+F 0 "#PWR014" H 3800 6200 50  0001 C CNN
+F 1 "Earth" H 3800 6300 50  0001 C CNN
+F 2 "" H 3800 6450 50  0001 C CNN
+F 3 "~" H 3800 6450 50  0001 C CNN
+	1    3800 6450
+	1    0    0    -1  
+$EndComp
+NoConn ~ 2150 1850
+NoConn ~ 1150 1350
+NoConn ~ 1150 1450
+NoConn ~ 1150 1550
+NoConn ~ 1150 1650
+NoConn ~ 1150 1750
+NoConn ~ 1150 1850
+NoConn ~ 2150 1550
+NoConn ~ 2150 1650
+NoConn ~ 2150 1750
+NoConn ~ 3200 2900
+NoConn ~ 3200 5150
+$EndSCHEMATC
