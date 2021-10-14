@@ -46,7 +46,7 @@ IPAddress apIP(192, 168, 1, 1);
 DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
-short C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14, C15, C16;
+short W[16];
 short prog;
 
 void setup(){
@@ -60,7 +60,7 @@ void setup(){
     index_str_orig += char(f.read());
   }
   
-  C1=C2=C3=C4=C5=C6=C7=0;
+  for(int i=0;i<16;i++) W[i] = 0;
 
   Serial.print("I/Os......... ");
   pinMode(dataPin, OUTPUT);
@@ -130,8 +130,8 @@ void writeRegister(byte bh, byte bl) {
   Serial.println("writeRegister");
   Serial.print(bh, BIN); Serial.print(" "); Serial.println(bl, BIN); 
   digitalWrite(loadPin, LOW);
-  shiftOut(dataPin, clockPin, MSBFIRST, bh);
   shiftOut(dataPin, clockPin, MSBFIRST, bl);
+  shiftOut(dataPin, clockPin, MSBFIRST, bh);
   digitalWrite(loadPin, HIGH);
 }
 
@@ -171,7 +171,7 @@ void handlePost(){
       if (webServer.arg("mode") == "3")
       {
           Serial.println("Mode: cruise");
-          C4=1;
+          W[3]=1; // Gray
       }
       /*    
       if (prog == "Mode 1")           datah=0b01111111;
@@ -186,18 +186,21 @@ void handlePost(){
 
     if(webServer.hasArg("name"))
     {
-      if(webServer.arg("name") == "RightSide")     C8  = webServer.arg("value") == "true" ? 1:0;
-      if(webServer.arg("name") == "LeftSide")      C9 = webServer.arg("value") == "true" ? 1:0;
-      if(webServer.arg("name") == "Flashing")      C10 = webServer.arg("value") == "true" ? 1:0;
-      if(webServer.arg("name") == "LowPower")      C11 = webServer.arg("value") == "true" ? 1:0;
-      if(webServer.arg("name") ==  "FlashTD")      C12 = webServer.arg("value") == "true" ? 1:0;
-      if(webServer.arg("name") ==  "DisableFront") C13 = webServer.arg("value") == "true" ? 1:0;
-      if(webServer.arg("name") ==  "DisableRear")  C14 = webServer.arg("value") == "true" ? 1:0;
-      if(webServer.arg("name") ==  "ProgramMode")  C15 = webServer.arg("value") == "true" ? 1:0;
+      if(webServer.arg("name") ==  "TakeDowns")    W[6] = webServer.arg("value") == "true" ? 1:0; // brown-black
+      if(webServer.arg("name") == "RightSide")     W[7]  = webServer.arg("value") == "true" ? 1:0; // orange-black
+      if(webServer.arg("name") == "LeftSide")      W[8] = webServer.arg("value") == "true" ? 1:0; // blue-black
+      if(webServer.arg("name") == "Flashing")      W[9] = webServer.arg("value") == "true" ? 1:0; 
+      if(webServer.arg("name") == "LowPower")      W[10] = webServer.arg("value") == "true" ? 1:0;  // green
+      if(webServer.arg("name") ==  "FlashTD")      W[11] = webServer.arg("value") == "true" ? 1:0; 
+      if(webServer.arg("name") ==  "DisableFront") W[12] = webServer.arg("value") == "true" ? 1:0; // yellow-black
+      if(webServer.arg("name") ==  "DisableRear")  W[13] = webServer.arg("value") == "true" ? 1:0; // green-black
+      if(webServer.arg("name") ==  "ProgramMode")  W[14] = webServer.arg("value") == "true" ? 1:0;
     }
-  
-    datah = C1*128 + C2*64 + C3*32 + C4*16 + C5*8 + C6*4 + C7*2 + C8*1;
-    datal = C9*128 + C10*64 + C11*32 + C12*16 + C13*8 + C14*4 + C15*2;
+
+    datal = 0;
+    datah = 0;
+    for (int i=0;i<8;i++) datal += W[i] * 2**i;
+    for (int i=8;i<16;i++) datah += W[i] * 2**(i-8);
     datah = ~byte(datah);
     datal = ~byte(datal);
     writeRegister(datah, datal);

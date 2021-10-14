@@ -11,20 +11,24 @@
         
         $("#mode").change(function(){
           if($(this)[0].value==0){
+            // Flashing mode
             $(".mode").hide();
             $(".mode1").show();
           }
           if($(this)[0].value==1){
+            // Steady 1
             $(".mode").hide();
             $(".mode2").show();
             $(".lightlist").html( $("#lightlist").html() );
           }
           if($(this)[0].value==2){
+            // Steady 2
             $(".mode").hide();
             $(".mode3").show();
             $(".lightlist").html( $("#lightlist").html() );
           }
           if($(this)[0].value==3){
+            // Cruise mode
             $(".mode").hide();
             $(".cruisemode").show();
           }

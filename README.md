@@ -33,9 +33,9 @@ The 3.3V is either supplied by a LD1117V33 regulator (optional) or by the regula
 
 [My EDA project can be found here](https://easyeda.com/arnaud.dessein/torrent-light-bar)  
 
-![](https://image.easyeda.com/histories/842fc65e87f74eb69158350fe2f58f6e.png)  
+![](/doc/drawing.png)  
 
-![](https://image.easyeda.com/histories/a20f3e8650d344d2a72c066444794c6b.png)  
+![](/doc/pcb.png)  
 
 
 
