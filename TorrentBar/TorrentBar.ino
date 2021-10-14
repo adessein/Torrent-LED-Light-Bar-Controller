@@ -46,7 +46,7 @@ IPAddress apIP(192, 168, 1, 1);
 DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
-short C1, C2, C3, C4, C5, C6, C7, C8;
+short C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14, C15, C16;
 short prog;
 
 void setup(){
@@ -84,10 +84,11 @@ void setup(){
   webServer.on("/", sendIndex);
   webServer.on("/jquery.min.js", sendjQuery);
   webServer.on("/styles.css", sendCSS);
-  //webServer.on("/TorrentBar.html", HTTP_POST, handlePost);
-  webServer.on("/TorrentBar.html", HTTP_POST, dumpArgs);
+  webServer.on("/TorrentBar.html", HTTP_POST, handlePost);
+  //webServer.on("/TorrentBar.html", HTTP_POST, dumpArgs);
   webServer.begin();
   Serial.println("OK !");
+  writeRegister(0xFF,0xFF);
 }
 
 void loop() {
@@ -144,34 +145,35 @@ void dumpArgs(){
 
 
 void handlePost(){
-/*
+
   Serial.println("handlePost");
 
   if (webServer.hasArg("user"))  {
     if (webServer.hasArg("mode"))  {
       
       Serial.print("Prog= "); Serial.println(prog);
-  
-      switch(webServer.arg("mode")){
-        case 0:
+
+      if (webServer.arg("mode") == "0")
+      {
           Serial.println("Mode: flashing");
-          datah=0b01111111;
-          break;
-        case 1:
-          Serial.println("Mode: steady 1");
-          datah=0b10111111;
-          break;
-        case 2:
-          Serial.println("Mode: steady 2");
-          datah=0b11011111;
-        case 3:
-          Serial.println("Mode: cruise");
-          datah=0b11101111;
-          break;
-        default:
-          break;
+          C1=1;
       }
-          
+      if (webServer.arg("mode") == "1")
+      {
+          Serial.println("Mode: steady 1");
+          C2=1;
+      }
+      if (webServer.arg("mode") == "2")
+      {
+          Serial.println("Mode: steady 2");
+          C3=1;
+      }
+      if (webServer.arg("mode") == "3")
+      {
+          Serial.println("Mode: cruise");
+          C4=1;
+      }
+      /*    
       if (prog == "Mode 1")           datah=0b01111111;
       if (prog == "Mode 2")           datah=0b10111111;
       if (prog == "Mode 3")           datah=0b11011111;
@@ -179,21 +181,26 @@ void handlePost(){
       if (prog == "Rear Left Arrow")  datah=0b11110111;
       if (prog == "Rear Right Arrow") datah=0b11111011;
       if (prog == "Take Downs")       datah=0b11111101;
+      */
+    }
+
+    if(webServer.hasArg("name"))
+    {
+      if(webServer.arg("name") == "RightSide")     C8  = webServer.arg("value") == "true" ? 1:0;
+      if(webServer.arg("name") == "LeftSide")      C9 = webServer.arg("value") == "true" ? 1:0;
+      if(webServer.arg("name") == "Flashing")      C10 = webServer.arg("value") == "true" ? 1:0;
+      if(webServer.arg("name") == "LowPower")      C11 = webServer.arg("value") == "true" ? 1:0;
+      if(webServer.arg("name") ==  "FlashTD")      C12 = webServer.arg("value") == "true" ? 1:0;
+      if(webServer.arg("name") ==  "DisableFront") C13 = webServer.arg("value") == "true" ? 1:0;
+      if(webServer.arg("name") ==  "DisableRear")  C14 = webServer.arg("value") == "true" ? 1:0;
+      if(webServer.arg("name") ==  "ProgramMode")  C15 = webServer.arg("value") == "true" ? 1:0;
     }
   
-    C1 = webServer.hasArg("RightSide")    ? 1:0;
-    C2 = webServer.hasArg("LeftSide")     ? 1:0;
-    C3 = webServer.hasArg("Flashing")     ? 1:0;
-    C4 = webServer.hasArg("LowPower")     ? 1:0;
-    C5 = webServer.hasArg("FlashTD")      ? 1:0;
-    C6 = webServer.hasArg("DisableFront") ? 1:0;
-    C7 = webServer.hasArg("DisableRear")  ? 1:0;  
-    C8 = webServer.hasArg("ProgramMode")  ? 1:0;  
-  
-    datah = datah & ~C1;
-    datal = C2*128 + C3*64 + C4*32 + C5*16 + C6*8 + C7*4 + C8*2;
+    datah = C1*128 + C2*64 + C3*32 + C4*16 + C5*8 + C6*4 + C7*2 + C8*1;
+    datal = C9*128 + C10*64 + C11*32 + C12*16 + C13*8 + C14*4 + C15*2;
+    datah = ~byte(datah);
     datal = ~byte(datal);
     writeRegister(datah, datal);
-  }*/
+  }
 
 }
