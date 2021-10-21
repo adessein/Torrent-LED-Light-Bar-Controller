@@ -10,68 +10,74 @@
       $(function(){
         
         $("#mode").change(function(){
-          if($(this)[0].value==0){
-            // Flashing mode
+          if(this.value==1){
+            //Mode 1
             $(".mode").hide();
             $(".mode1").show();
           }
-          if($(this)[0].value==1){
-            // Steady 1
+          if(this.value==2){
+            // Mode 2
             $(".mode").hide();
             $(".mode2").show();
-            $(".lightlist").html( $("#lightlist").html() );
+            $(".lightlist").html( $("#lighthead-patterns").html() ); // Populates the comboboxes with the lists
           }
-          if($(this)[0].value==2){
-            // Steady 2
+          if(this.value==3){
+            // Steady 3
             $(".mode").hide();
             $(".mode3").show();
-            $(".lightlist").html( $("#lightlist").html() );
-          }
-          if($(this)[0].value==3){
-            // Cruise mode
-            $(".mode").hide();
-            $(".cruisemode").show();
           }
         });
           
+
         $(".send").change(function(){
-          $.post("TorrentBar.html",
+          $.post("server",
           {
             user: 1,
-            mode: $("select#mode").val(),
+            mode: $("select#mode").val(), //Send the selected mode value
             flash_mode: $("select#flash").val()
           });
           return false;
         });
         
         $(".mod").change(function(){
-          $.post("TorrentBar.html",
+          $.post("server",
           {
             user: 1,
-            name: $(this)[0].name,
-            value: $(this)[0].checked
+            name: this.name,
+            value: this.checked
           });
           return false;
         });
         
+        
         $("#program_button").click(function(){
-          var data = {};
-          data["user"] = 1;
-          data["event"] = "program_button";
-          for (var i=1; i<7;i++) {
-            data['lp' + i] = $("select#lp"+i).val();
-          }
           $.ajax({
             type: "POST",
-            url: "TorrentBar.html",
-            data: data});
+            url: "server",
+            dataType: 'text',
+            data: ({
+              user: 1,
+              event: "program_button",
+              lp1: $("select#lp1").first().val(),
+              lp2: $("select#lp2").first().val(),
+              lp3: $("select#lp3").first().val(),
+              lp4: $("select#lp4").first().val(),
+              lp5: $("select#lp5").first().val(),
+              lp6: $("select#lp6").first().val(),
+            }),
+
+            success: function(data, textStatus, jqXHR) {},
+            error: function(xhr, status, error) {}
+          });
+          
           console.log(data);
           return false;
         });
         
         
+        
         $("#flash_button").click(function(){
-          $.post("TorrentBar.html",
+          $.post("server",
           {
             user: 1,
             event: "flash_button"
@@ -81,7 +87,8 @@
         
         
         $("#flash").change(function(){
-          if($(this)[0].value>3 && $(this)[0].value<12){
+          if(this.val>3 && this.val<12)
+          {
             $(".crosspattern").show();
           }
           else
@@ -103,10 +110,9 @@
             <p>
               <label>Mode</label>
               <select class="send" id="mode" name="select_mode">
-                <option value=0>Flashing</option>
-                <option value=1>Steady 1</option>
-                <option value=2>Steady 2</option>
-                <option value=3>Cruise Mode</option>
+                <option value=1>Mode 1</option>
+                <option value=2>Mode 2</option>
+                <option value=3>Mode 3</option>
               </select>
             </p>
           </fieldset>
@@ -117,7 +123,7 @@
             <legend>Flash pattern</legend>
             <p>
               <label>Pattern</label>
-              <select class="send" id="flash" name="select_flash">
+              <select class="send" id="select_mode1_pattern" name="select_mode1_pattern">
                 <option value=0>Outside-In Single</option>
                 <option value=1>Outside-In Ultra</option>
                 <option value=2>Side-by-Side Single</option>
@@ -151,32 +157,34 @@
             </div>
           </fieldset>
         </div>
-        <datalist id="lightlist">
-            <option value=0>Steady</option>
-            <option value=1>Single Slow (split)</option>
-            <option value=2>Single Mid (split)</option>
-            <option value=3>Single Fast (split)</option>
-            <option value=4>Double (split)</option>
-            <option value=5>Double (split)</option>
-            <option value=6>Quint (split)</option>
-            <option value=7>Ultra (split)</option>
-            <option value=8>Single-Quad (split)</option>
-            <option value=9>Single H/L (split)</option>
-            <option value=10>Random</option>
-            <option value=11>Off</option>
-            <option value=12>Single Slow (all)</option>
-            <option value=13>Single Mid (all)</option>
-            <option value=14>Single Fast (all)</option>
-            <option value=15>Double (all)</option>
-            <option value=16>Double (all)</option>
-            <option value=17>Quint (all)</option>
-            <option value=18>Ultra (all)</option>
-            <option value=19>Single-Quad (all)</option>
-            <option value=20>Single H/L (all)</option>
-        </datalist>
+        
         
         <!-- Mode 2 -->
-        <div class="mode mode2 mode3 initiallyHidden">       
+        <datalist id="lighthead-patterns">
+          <option value=0>Steady</option>
+          <option value=1>Single Slow (split)</option>
+          <option value=2>Single Mid (split)</option>
+          <option value=3>Single Fast (split)</option>
+          <option value=4>Double (split)</option>
+          <option value=5>Double (split)</option>
+          <option value=6>Quint (split)</option>
+          <option value=7>Ultra (split)</option>
+          <option value=8>Single-Quad (split)</option>
+          <option value=9>Single H/L (split)</option>
+          <option value=10>Random</option>
+          <option value=11>Off</option>
+          <option value=12>Single Slow (all)</option>
+          <option value=13>Single Mid (all)</option>
+          <option value=14>Single Fast (all)</option>
+          <option value=15>Double (all)</option>
+          <option value=16>Double (all)</option>
+          <option value=17>Quint (all)</option>
+          <option value=18>Ultra (all)</option>
+          <option value=19>Single-Quad (all)</option>
+          <option value=20>Single H/L (all)</option>
+        </datalist>
+
+        <div class="mode mode2 mode3 initiallyHidden">
           <fieldset class="fieldset-auto-width">
             <legend>Lighting pattern</legend>
             <table>
