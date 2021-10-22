@@ -62,7 +62,7 @@ bool cruiseMode;
 bool flashingTdsAlleys;
 short lightheadPatterns[6]; // 0 to 19
 short mode;
-short flashingPattern; // 0 to 20
+short flashPattern; // 0 to 20
 short flashingTdsAlleysMode; // 0 to 3 (TD + Alley, Alley, TD)
 short trafficArrowsMode; // 0 to 3 (left, right, center out)
 short trafficArrowsPattern; // 0 to 10
@@ -105,9 +105,9 @@ void setup(){
   // Initialisation of the state
   for(int i=0;i<16;i++) W[i] = false;
   for(int i=0;i<6;i++) lightheadPatterns[i] = 0;
-  mode = 0;
+  mode = 1;
   crossPattern = false;
-  flashingPattern = 0;
+  flashPattern = 0;
   flashingTdsAlleys = false;
   flashingTdsAlleysMode = 0;
   cruiseMode = false;
@@ -198,7 +198,6 @@ void dumpArgs()
 void sendIndex()
 {
   Serial.println("Sending index page... ");
-  Serial.print(index_str.c_str());
   webServer.send(200, "text/html", index_str.c_str());
 }
 
@@ -208,12 +207,11 @@ void status()
   // Returns the current state as JSON
   doc["mode"] = mode;
 
-  doc["flashingPattern"] = flashingPattern; // Mode1 0 to 19
+  doc["flashPattern"] = flashPattern; // Mode1 0 to 19
   doc["flashingTdsAlleysMode"] = flashingTdsAlleysMode; // 0 to 3 (TD + Alley, Alley, TD)
   doc["cruiseMode"] = cruiseMode;
-  doc["trafficArrows"] = trafficArrowsMode;
+  doc["trafficArrowsMode"] = trafficArrowsMode;
   doc["trafficArrowsPattern"] = trafficArrowsPattern;
-  doc["flashingTdsAlleys"] = flashingTdsAlleys;
   // mods
   doc["rightSideAlley"] = rightSideAlley;
   doc["leftSideAlley"] = leftSideAlley;
@@ -238,11 +236,6 @@ void update()
 
   if (webServer.hasArg("mode"))
   {
-    if (webServer.hasArg("crossPattern"))
-    {
-      crossPattern = webServer.arg("crossPattern").toInt();
-    }
-
     // {mode: int (1 to 3)}
     mode = webServer.arg("mode").toInt();
     
@@ -269,56 +262,77 @@ void update()
 
   if(webServer.hasArg("cruiseMode")) cruiseMode = webServer.arg("cruiseMode") == "true" ? 1:0; // green-black
 
-  if (webServer.hasArg("program"))
+  if(webServer.hasArg("cruiseMoreLightheads"))
   {
-    // Programs are settings requiring wire taps
+    // Tap purple W[14] a single time
+    tapWire(14, 1, false);
+  }
 
-    if(webServer.arg("program")=="mode1")
+  if(webServer.hasArg("flashPattern"))
+  {
+    flashPattern = webServer.arg("flashPattern").toInt();
+
+    // Tap 3 times in a second W[9] to reset
+    tapWire(9, 3, true);
+    // Tap flashPattern times W[9]
+    tapWire(9, flashPattern, false);
+  }
+
+  if(webServer.hasArg("lightheadPatterns"))
+  {
+    const size_t CAPACITY = JSON_ARRAY_SIZE(6);
+    StaticJsonDocument<CAPACITY> doc;
+    deserializeJson(doc,  webServer.arg("lp"));
+    JsonArray array = doc.as<JsonArray>();
+
+    for(int i=0;i<6;i++)
     {
-      flashingPattern = webServer.arg("flashingPattern").toInt();
+      lightheadPatterns[i] = array[i].as<int>();
+    }
 
+    // Tap 3 times in a second W[14] to enter program mode
+    tapWire(14, 3, true);
+    
+    // For each pair
+    for(int i=0; i<6; i++)
+    {
       // Tap 3 times in a second W[9] to reset
       tapWire(9, 3, true);
-      // Tap flashingPattern times W[9]
-      tapWire(9, flashingPattern, false);
+      // Tap lightheadPatterns[i] times W[9]
+      tapWire(9, lightheadPatterns[i], false);
+      // Tap W[14] to move to next pair
+      tapWire(14, 1, false);
     }
 
-    if(webServer.arg("program")=="mode2" || webServer.arg("program")=="mode3")
+    // Tap 3 times in a second W[14] to exit program mode
+    tapWire(14, 3, true);
+  }
+
+  if (webServer.hasArg("trafficArrowsPattern"))
+  {
+    trafficArrowsPattern = webServer.arg("trafficArrowsPattern").toInt();
+
+    // Tap 3 times in a second W[9] to reset 
+    tapWire(9, 3, true);
+    // Tap trafficArrowsPattern times W[9]
+    tapWire(9, trafficArrowsPattern, false);
+  }
+
+  if(webServer.hasArg("flashingTdsAlleysMode"))
+  {
+    flashingTdsAlleysMode = webServer.arg("flashingTdsAlleysMode").toInt();
+    
+    flashingTdsAlleys = flashingTdsAlleysMode == 0 ? false:true;
+
+    if(flashingTdsAlleysMode>0)
     {
-      lightheadPatterns[0] = webServer.arg("lp1").toInt();
-      lightheadPatterns[1] = webServer.arg("lp2").toInt();
-      lightheadPatterns[2] = webServer.arg("lp3").toInt();
-      lightheadPatterns[3] = webServer.arg("lp4").toInt();
-      lightheadPatterns[4] = webServer.arg("lp5").toInt();
-      lightheadPatterns[5] = webServer.arg("lp6").toInt();
+      // I need to activate the wire now, since I need to configure
+      setWire(11, true); // Red-black
 
-      // Tap 3 times in a second W[14] to enter program mode
-      tapWire(14, 3, true);
-      
-      // For each pair
-      for(int i=0; i<6; i++)
-      {
-        // Tap 3 times in a second W[9] to reset
-        tapWire(9, 3, true);
-        // Tap lightheadPatterns[i] times W[9]
-        tapWire(9, lightheadPatterns[i], false);
-        // Tap W[14] to move to next pair
-        tapWire(14, 1, false);
-      }
-
-      // Tap 3 times in a second W[14] to exit program mode
-      tapWire(14, 3, true);
+      // Tap flashingTdsAlleysMode times W[9]
+      tapWire(9, flashingTdsAlleysMode, false);
     }
 
-    if (webServer.arg("program")=="trafficArrowsPattern")
-    {
-      trafficArrowsPattern = webServer.arg("trafficArrowsPattern").toInt();
-
-      // Tap 3 times in a second W[9] to reset 
-      tapWire(9, 3, true);
-      // Tap trafficArrowsPattern times W[9]
-      tapWire(9, trafficArrowsPattern, false);
-    }
   }
 
   if (webServer.hasArg("trafficArrowsMode"))
@@ -328,27 +342,21 @@ void update()
     W[5] = trafficArrowsMode == 2 || trafficArrowsMode == 3 ? 1:0; // blue
   }
 
-  if (webServer.hasArg("type"))
+  if (webServer.hasArg("mod"))
   {
-    if (webServer.arg("type") == "mod")
-    {
-      if(webServer.arg("name") == "takeDownLights")    takeDownLights = webServer.arg("value") == "true" ? 1:0; // brown-black
-      if(webServer.arg("name") == "rightSideAlley")    rightSideAlley  = webServer.arg("value") == "true" ? 1:0; // orange-black
-      if(webServer.arg("name") == "leftSideAlley")     leftSideAlley = webServer.arg("value") == "true" ? 1:0; // blue-black
-      if(webServer.arg("name") == "lowPower")          lowPower = webServer.arg("value") == "true" ? 1:0;  // green
-      if(webServer.arg("name") == "flashingTdsAlleys") flashingTdsAlleys = webServer.arg("value") == "true" ? 1:0; 
-      if(webServer.arg("name") == "frontCutoff")       frontCutoff = webServer.arg("value") == "true" ? 1:0; // yellow-black
-      if(webServer.arg("name") == "rearCutoff")        rearCutoff = webServer.arg("value") == "true" ? 1:0; // green-black  
-    }
+    if(webServer.arg("mod") == "takeDownLights")    takeDownLights = webServer.arg("value") == "true" ? true:false; // brown-black
+    if(webServer.arg("mod") == "rightSideAlley")    rightSideAlley  = webServer.arg("value") == "true" ? true:false; // orange-black
+    if(webServer.arg("mod") == "leftSideAlley")     leftSideAlley = webServer.arg("value") == "true" ? true:false; // blue-black
+    if(webServer.arg("mod") == "lowPower")          lowPower = webServer.arg("value") == "true" ? true:false;  // green 
+    if(webServer.arg("mod") == "frontCutoff")       frontCutoff = webServer.arg("value") == "true" ? true:false; // yellow-black
+    if(webServer.arg("mod") == "rearCutoff")        rearCutoff = webServer.arg("value") == "true" ? true:false; // green-black  
+    
+    if(webServer.arg("mod") == "crossPattern")    crossPattern = webServer.arg("value") == "true" ? true:false;  
+    if(webServer.arg("mod") == "cruiseMode")      cruiseMode = webServer.arg("value") == "true" ? true:false;  
   }
   
 
-  if(mode!=1)
-  {
-    // In mode 1 the gray wire is used for crossed pattern.
-    W[3] = cruiseMode; // gray
-  }
-  
+  W[3] = cruiseMode | crossPattern; // gray cruise mode or cross pattern
   W[6] = takeDownLights; // brown-black
   W[7] = rightSideAlley; // orange-black
   W[8] = leftSideAlley; // blue-black
@@ -359,33 +367,29 @@ void update()
   W[13] = rearCutoff; // green-black
   W[14] = 0; //purple is tapped
 
-  datal = (byte)0xFF;
-  datah = (byte)0xFF;
-  for (int i=0;i<8;i++)  datal = datal & ~(1 << W[i]); // Pull down
-  for (int i=8;i<16;i++) datah = datah & ~(1 << W[i]); // Pull down
-  writeRegister(datah, datal);
-
+  setWires();
   delay(100);
   status();
 }
 
-void tapWire(int w, int N=1, bool fast=false)
+void setWires()
 {
-  for(int i=0; i<N; i++)
-  {
-    // Tapping is to put at 0
-    if(w<8)
-    {
-      datal = datal & ~(1 << w); // Pull down
-    }
-    else
-    {
-      datah = datah & ~(1 << w-8); // Pull down
-    }
-    
-    writeRegister(datah, datal);
-    delay(50);
+  // Reset the bytes
+  datal = (byte)0xFF;
+  datah = (byte)0xFF;
 
+  for (int i=0;i<8;i++)  datal = datal & ~(1 << W[i]); // Pull down
+  for (int i=8;i<16;i++) datah = datah & ~(1 << W[i]); // Pull down
+
+  writeRegister(datah, datal);
+}
+
+void setWire(int w, bool state)
+{
+  // state=true : Apply +12V
+  // state=false : Apply 0V
+  if(state==false) // I want to pull up
+  {
     if(w<8)
     {
       datal = datal | (1 << w); // Pull up
@@ -394,7 +398,28 @@ void tapWire(int w, int N=1, bool fast=false)
     {
       datah = datah | (1 << w-8); // Pull up
     }
-    writeRegister(datah, datal);
+  }
+  else
+  {
+    if(w<8)
+    {
+      datal = datal & ~(1 << w); // Pull down
+    }
+    else
+    {
+      datah = datah & ~(1 << w-8); // Pull down
+    }
+  }
+  writeRegister(datah, datal);
+}
+
+void tapWire(int w, int N=1, bool fast=false)
+{
+  for(int i=0; i<N; i++)
+  {
+    setWire(w, true);
+    delay(50);
+    setWire(w, false);
 
     if(fast) // triple tap
     {

@@ -8,8 +8,50 @@
     <script src="jquery.min.js"></script>
     <script language="javascript" type="text/javascript">
       $(function(){
+
+        //Read the state
+        $.ajax({
+            type: "GET",
+            url: "status",
+            dataType: 'json',
+            success: function(data, textStatus, jqXHR){
+              $("#mode")[0].value = data["mode"];
+              $("#flashPattern")[0].value = data["flashPattern"];
+              $("#flashingTdsAlleysMode")[0].value = data["flashingTdsAlleysMode"];
+              $("#cruiseMode")[0].checked = data["cruiseMode"];
+              $("#trafficArrowsMode")[0].value = data["trafficArrowsMode"];
+              $("#trafficArrowsPattern")[0].value = data["trafficArrowsPattern"];
+              $("#rightSideAlley")[0].checked = data["rightSideAlley"];
+              $("#leftSideAlley")[0].checked = data["leftSideAlley"];
+              $("#lowPower")[0].checked = data["lowPower"];
+              $("#frontCutoff")[0].checked = data["frontCutoff"];
+              $("#rearCutoff")[0].checked = data["rearCutoff"];
+              $("#takeDownLights")[0].checked = data["takeDownLights"];
+              $("#lp1").first().value = data["lp"][0];
+              $("#lp2").first().value = data["lp"][1];
+              $("#lp3").first().value = data["lp"][2];
+              $("#lp4").first().value = data["lp"][3];
+              $("#lp5").first().value = data["lp"][4];
+              $("#lp6").first().value = data["lp"][5];
+            },
+            error: function(xhr, status, error) {alert("Could not get initial state");}
+            });
         
         $("#mode").change(function(){
+
+          $.ajax({
+            type: "POST",
+            url: "update",
+            dataType: 'json',
+            data: ({
+              mode: this.value
+            }),
+            success: function(data, textStatus, jqXHR){
+              element.checked = data[element.name];
+            },
+            error: function(xhr, status, error) {alert("The server did not reply");}
+            });
+
           if(this.value==1){
             //Mode 1
             $(".mode").hide();
@@ -19,25 +61,16 @@
             // Mode 2
             $(".mode").hide();
             $(".mode2").show();
-            $(".lightlist").html( $("#lighthead-patterns").html() ); // Populates the comboboxes with the lists
+            $(".lightheadPattern").html( $("#lightheadPatterns").html() ); // Populates the comboboxes with the lists
           }
           if(this.value==3){
             // Steady 3
             $(".mode").hide();
             $(".mode3").show();
+            $(".lightheadPattern").html( $("#lightheadPatterns").html() ); // Populates the comboboxes with the lists
           }
         });
-          
 
-        $(".send").change(function(){
-          $.post("server",
-          {
-            token: 1,
-            mode: $("select#mode").val(), //Send the selected mode value
-            flash_mode: $("select#flash").val()
-          });
-          return false;
-        });
         
         $(".mod").click(function(e){
           var element = this; // https://stackoverflow.com/a/6394826s
@@ -48,35 +81,87 @@
             url: "update",
             dataType: 'json',
             data: ({
-              type: "mod",
-              name: this.name,
-              value: this.checked //even if I prevent, the value turns true...
+              mod: this.id,
+              value: this.checked //even if I prevent, the value is the "desired" state...
             }),
           
           success: function(data, textStatus, jqXHR){
-            console.log("data");
-            console.log(data[element.name]);
-            element.checked = data[element.name];
+            element.checked = data[element.id];
           },
-          error: function(xhr, status, error) {}
+          error: function(xhr, status, error) {alert("The server did not reply");}
           });
         });
         
-        
-        $("#program_button").click(function(){
+        $("#cruiseMoreLightheads").click(function(){
+          $.ajax({
+            type: "POST",
+            url: "update",
+            dataType: 'json',
+            data: ({
+              cruiseMoreLightheads: true
+            }),
+          
+          success: function(data, textStatus, jqXHR){},
+          error: function(xhr, status, error) {alert("The server did not reply");}
+          });
+        }); 
+
+        $("#trafficArrowsMode").change(function(){
           $.ajax({
             type: "POST",
             url: "update",
             dataType: 'text',
             data: ({
-              user: 1,
-              event: "program_button",
-              lp1: $("select#lp1").first().val(),
-              lp2: $("select#lp2").first().val(),
-              lp3: $("select#lp3").first().val(),
-              lp4: $("select#lp4").first().val(),
-              lp5: $("select#lp5").first().val(),
-              lp6: $("select#lp6").first().val(),
+              trafficArrowsMode: this.value
+            }),
+
+            success: function(data, textStatus, jqXHR) {},
+            error: function(xhr, status, error) {}
+          });
+        });
+
+        $("#trafficArrowsPattern").change(function(){
+          $.ajax({
+            type: "POST",
+            url: "update",
+            dataType: 'text',
+            data: ({
+              trafficArrowsPattern: this.value
+            }),
+
+            success: function(data, textStatus, jqXHR) {},
+            error: function(xhr, status, error) {}
+          });
+        });
+
+        $("#flashingTdsAlleysMode").change(function(){
+          $.ajax({
+            type: "POST",
+            url: "update",
+            dataType: 'text',
+            data: ({
+              flashingTdsAlleysMode: this.value
+            }),
+
+            success: function(data, textStatus, jqXHR) {},
+            error: function(xhr, status, error) {}
+          });
+        });
+        
+        $("#lightheadPatternsSend").click(function(){
+          $.ajax({
+            type: "POST",
+            url: "update",
+            dataType: 'text',
+            data: ({
+              lightheadPatterns: true,
+              lp: [
+                $("#lp1").first().val(),
+                $("#lp2").first().val(),
+                $("#lp3").first().val(),
+                $("#lp4").first().val(),
+                $("#lp5").first().val(),
+                $("#lp6").first().val()],
             }),
 
             success: function(data, textStatus, jqXHR) {},
@@ -86,41 +171,18 @@
           console.log(data);
         });
         
-        
-        
-        $("#flash_button").click(function(){
-          $.post("server",
-          {
-            user: 1,
-            event: "flash_button"
-          });
-        });
-        
-        
-        $("#flash").change(function(){
-          if(this.val>3 && this.val<12)
-          {
-            $(".crosspattern").show();
-          }
-          else
-          {
-            $(".crosspattern").hide();
-          }
-        });
-        
       });
     </script>
   </head>
   <body>
     <header>Torrent LED Light Bar control c23c8</header>
-    <form>
       <section>
         <div>
           <fieldset class="fieldset-auto-width">
             <legend>Mode selection</legend>
             <p>
               <label>Mode</label>
-              <select class="send" id="mode" name="select_mode">
+              <select id="mode" name="mode">
                 <option value=1>Mode 1</option>
                 <option value=2>Mode 2</option>
                 <option value=3>Mode 3</option>
@@ -134,7 +196,7 @@
             <legend>Flash pattern</legend>
             <p>
               <label>Pattern</label>
-              <select class="send" id="select_mode1_pattern" name="select_mode1_pattern">
+              <select class="program" id="flashPattern">
                 <option value=0>Outside-In Single</option>
                 <option value=1>Outside-In Ultra</option>
                 <option value=2>Side-by-Side Single</option>
@@ -157,10 +219,10 @@
                 <option value=19>Single H/L (all)</option>
               </select>
             </p>
-            <div class="mode crosspattern initiallyHidden">
+            <div class="mode mode1 crosspattern initiallyHidden">
               <p>
                 <label class="switch">
-                  <input class="mod" type="checkbox" name="CrossPattern">
+                  <input class="mod" type="checkbox" name="crossPattern">
                   <span class="slider round"></span>
                 </label>
                 Cross pattern
@@ -169,9 +231,8 @@
           </fieldset>
         </div>
         
-        
-        <!-- Mode 2 -->
-        <datalist id="lighthead-patterns">
+        <!-- This list should be use for multiple dropdown-->
+        <datalist id="lightheadPatterns">
           <option value=0>Steady</option>
           <option value=1>Single Slow (split)</option>
           <option value=2>Single Mid (split)</option>
@@ -201,31 +262,31 @@
             <table>
               <tr>
                 <th>Pair 1</th>
-                <th><select id="lp1" class="lightlist"></select></th>
+                <th><select id="lp1" class="lightheadPattern"></select></th>
               </tr>
               <tr>
                 <th>Pair 2</th>
-                <th><select id="lp2" class="lightlist"></select></th>
+                <th><select id="lp2" class="lightheadPattern"></select></th>
               </tr>
               <tr>
                 <th>Pair 3</th>
-                <th><select id="lp3" class="lightlist"></select></th>
+                <th><select id="lp3" class="lightheadPattern"></select></th>
               </tr>
               <tr>
                 <th>Pair 4</th>
-                <th><select id="lp4" class="lightlist"></select></th>
+                <th><select id="lp4" class="lightheadPattern"></select></th>
               </tr>
               <tr>
                 <th>Pair 5</th>
-                <th><select id="lp5" class="lightlist"></select></th>
+                <th><select id="lp5" class="lightheadPattern"></select></th>
               </tr>
               <tr>
                 <th>Pair 6</th>
-                <th><select id="lp6" class="lightlist"></select></th>
+                <th><select id="lp6" class="lightheadPattern"></select></th>
               </tr>
             </table>
             <br />
-            <input type="button" value="Program" id="program_button">
+            <button id="lightheadPatternsSend">Program</button>
           </fieldset>
         </div>
         <!-- Traffic arrows -->
@@ -234,7 +295,7 @@
           <legend>Traffic arrow</legend>
           <p>
             <label>Mode</label>
-            <select id="arrows mode" name="arrows_mode">
+            <select id="trafficArrowsMode">
               <option value=0>Off</option>
               <option value=1>Left</option>
               <option value=2>Right</option>
@@ -243,7 +304,7 @@
           </p>
           <p>
             <label>Traffic arrow pattern</label>
-            <select id="arrows pattern">
+            <select id="trafficArrowsPattern">
               <option value=0>Sweep Single</option>
               <option value=1>Sweep Double</option>
               <option value=2>Sweep Triple</option>
@@ -257,54 +318,78 @@
               <option value=10>Blink Solid</option>
             </select>
           </p>
-          <input type="button" value="Flashing TDs & Alleys" id="flash_button" name="flashingTdsAlleysMode">
         </div>
       </section>
+      <section>
+        <legend>Flashing TDs and alleys</legend>
+        <p>
+          <label>Mode</label>
+          <select id="flashingTdsAlleysMode">
+            <option value=0>Off</option>
+            <option value=1>TDs and Alleys</option>
+            <option value=2>Alleys only</option>
+            <option value=3>TDs only</option>
+          </select>
+        </p>
+      </section>
+
+      <section>
+        <h1>Cruise mode</h1>
+        <legend>Cruise mode</legend>
+        <p>
+          <label class="switch">
+            <input class="mod" type="checkbox" id="cruiseMode">
+            <span class="slider round"></span>
+          </label>
+          Enable cruise mode
+        </p>
+        <button id="cruiseMoreLightheads">More lightheads</button>
+      </section>
+      
       <section>
         <h1>Modifiers</h1>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="rightSideAlley">
+            <input class="mod" type="checkbox" id="rightSideAlley">
             <span class="slider round"></span>
           </label>
           Enable right-side alley lights
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="leftSideAlley">
+            <input class="mod" type="checkbox" id="leftSideAlley">
             <span class="slider round"></span>
           </label>
           Enable left-side alley lights
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="lowPower">
+            <input class="mod" type="checkbox" id="lowPower">
             <span class="slider round"></span>
           </label>
           Low power
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="frontCutoff">
+            <input class="mod" type="checkbox" id="frontCutoff">
             <span class="slider round"></span>
           </label>
           Disable front lights
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="rearCutoff">
+            <input class="mod" type="checkbox" id="rearCutoff">
             <span class="slider round"></span>
           </label>
           Disable rear lights
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="takeDownLights">
+            <input class="mod" type="checkbox" id="takeDownLights">
             <span class="slider round"></span>
           </label>
           Take Downs
         </p>
       </section>
-    </form>
   </body>
 </html> 
