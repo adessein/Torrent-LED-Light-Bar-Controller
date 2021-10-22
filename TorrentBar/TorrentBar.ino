@@ -57,23 +57,25 @@ ESP8266WebServer webServer(80);
 
 
 DynamicJsonDocument doc(1024);
+bool crossPattern;
+bool cruiseMode;
+bool flashingTdsAlleys;
 short lightheadPatterns[6]; // 0 to 19
-short crossPattern; // 0 or 1
 short mode;
 short flashingPattern; // 0 to 20
 short flashingTdsAlleysMode; // 0 to 3 (TD + Alley, Alley, TD)
-short cruiseMode; // 0 or 1
 short trafficArrowsMode; // 0 to 3 (left, right, center out)
 short trafficArrowsPattern; // 0 to 10
-short takeDownLights;
-short leftSideAlley;
-short rightSideAlley;
-short frontCutoff;
-short rearCutoff;
-short lowPower;
-short flashingTdsAlleys;
+
+//mod
+bool rightSideAlley;
+bool leftSideAlley;
+bool lowPower;
+bool frontCutoff;
+bool rearCutoff;
+bool takeDownLights;
 //internals
-short W[16]; // state of the wires
+bool W[16]; // state of the wires
 
 
 void tapWire(int, int, bool);
@@ -101,23 +103,24 @@ void setup(){
   }
   
   // Initialisation of the state
-  for(int i=0;i<16;i++) W[i] = 0;
+  for(int i=0;i<16;i++) W[i] = false;
   for(int i=0;i<6;i++) lightheadPatterns[i] = 0;
   mode = 0;
-  crossPattern = 0;
+  crossPattern = false;
   flashingPattern = 0;
+  flashingTdsAlleys = false;
   flashingTdsAlleysMode = 0;
-  cruiseMode = 0;
+  cruiseMode = false;
   trafficArrowsMode = 0;
-  takeDownLights = 0;
-  leftSideAlley = 0;
-  rightSideAlley = 0;
-  frontCutoff = 0;
-  rearCutoff = 0;
-  lowPower = 0;
-  flashingTdsAlleys = 0;
   trafficArrowsMode = 0;
   trafficArrowsPattern = 0;
+  // mods
+  rightSideAlley = false;
+  leftSideAlley = false;
+  lowPower = false;
+  frontCutoff = false;
+  rearCutoff = false;
+  takeDownLights = false;
 
   Serial.print("I/Os......... ");
   pinMode(dataPin, OUTPUT);
@@ -201,22 +204,23 @@ void sendIndex()
 
 void status()
 {
+  Serial.println("status");
   // Returns the current state as JSON
   doc["mode"] = mode;
 
   doc["flashingPattern"] = flashingPattern; // Mode1 0 to 19
   doc["flashingTdsAlleysMode"] = flashingTdsAlleysMode; // 0 to 3 (TD + Alley, Alley, TD)
-  doc["cruiseMode"] = cruiseMode; // 0 or 1
-  doc["trafficArrows"] = trafficArrowsMode; // 0 or 1
-  doc["takeDownLights"] = takeDownLights;
-  doc["leftSideAlley"] = leftSideAlley;
-  doc["rightSideAlley"] = rightSideAlley;
-  doc["frontCutoff"] = frontCutoff;
-  doc["rearCutoff"] = rearCutoff;
-  doc["lowPower"] = lowPower;
-  doc["flashingTdsAlleys"] = flashingTdsAlleys;
+  doc["cruiseMode"] = cruiseMode;
   doc["trafficArrows"] = trafficArrowsMode;
   doc["trafficArrowsPattern"] = trafficArrowsPattern;
+  doc["flashingTdsAlleys"] = flashingTdsAlleys;
+  // mods
+  doc["rightSideAlley"] = rightSideAlley;
+  doc["leftSideAlley"] = leftSideAlley;
+  doc["lowPower"] = lowPower;
+  doc["frontCutoff"] = frontCutoff;
+  doc["rearCutoff"] = rearCutoff;
+  doc["takeDownLights"] = takeDownLights;
 
   // Light patterns (mode 2)
   JsonArray data = doc.createNestedArray("lp");
@@ -244,26 +248,26 @@ void update()
     
     if(mode==1)
     {
-      W[0] = 1;
-      W[1] = 0;
-      W[2] = 0;
+      W[0] = true;
+      W[1] = false;
+      W[2] = false;
       W[3] = crossPattern; 
     }
     if(mode==2)
     {
-      W[0] = 0;
-      W[1] = 1;
-      W[2] = 0;
+      W[0] = false;
+      W[1] = true;
+      W[2] = false;
     }
     if(mode==3)
     {
-      W[0] = 0;
-      W[1] = 0;
-      W[2] = 1;
+      W[0] = false;
+      W[1] = false;
+      W[2] = true;
     }
   }
 
-  if(webServer.hasArg("cruiseMode"))        cruiseMode = webServer.arg("cruiseMode") == "true" ? 1:0; // green-black
+  if(webServer.hasArg("cruiseMode")) cruiseMode = webServer.arg("cruiseMode") == "true" ? 1:0; // green-black
 
   if (webServer.hasArg("program"))
   {
@@ -324,14 +328,20 @@ void update()
     W[5] = trafficArrowsMode == 2 || trafficArrowsMode == 3 ? 1:0; // blue
   }
 
-
-  if(webServer.hasArg("takeDownLights"))    takeDownLights = webServer.arg("takeDownLights") == "true" ? 1:0; // brown-black
-  if(webServer.hasArg("rightSideAlley"))    rightSideAlley  = webServer.arg("rightSideAlley") == "true" ? 1:0; // orange-black
-  if(webServer.hasArg("leftSideAlley"))     leftSideAlley = webServer.arg("leftSideAlley") == "true" ? 1:0; // blue-black
-  if(webServer.hasArg("lowPower"))          lowPower = webServer.arg("lowPower") == "true" ? 1:0;  // green
-  if(webServer.hasArg("flashingTdsAlleys")) flashingTdsAlleys = webServer.arg("flashingTdsAlleys") == "true" ? 1:0; 
-  if(webServer.hasArg("frontCutoff"))       frontCutoff = webServer.arg("frontCutoff") == "true" ? 1:0; // yellow-black
-  if(webServer.hasArg("rearCutoff"))        rearCutoff = webServer.arg("rearCutoff") == "true" ? 1:0; // green-black
+  if (webServer.hasArg("type"))
+  {
+    if (webServer.arg("type") == "mod")
+    {
+      if(webServer.arg("name") == "takeDownLights")    takeDownLights = webServer.arg("value") == "true" ? 1:0; // brown-black
+      if(webServer.arg("name") == "rightSideAlley")    rightSideAlley  = webServer.arg("value") == "true" ? 1:0; // orange-black
+      if(webServer.arg("name") == "leftSideAlley")     leftSideAlley = webServer.arg("value") == "true" ? 1:0; // blue-black
+      if(webServer.arg("name") == "lowPower")          lowPower = webServer.arg("value") == "true" ? 1:0;  // green
+      if(webServer.arg("name") == "flashingTdsAlleys") flashingTdsAlleys = webServer.arg("value") == "true" ? 1:0; 
+      if(webServer.arg("name") == "frontCutoff")       frontCutoff = webServer.arg("value") == "true" ? 1:0; // yellow-black
+      if(webServer.arg("name") == "rearCutoff")        rearCutoff = webServer.arg("value") == "true" ? 1:0; // green-black  
+    }
+  }
+  
 
   if(mode!=1)
   {

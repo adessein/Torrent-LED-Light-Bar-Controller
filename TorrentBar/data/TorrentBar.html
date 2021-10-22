@@ -32,28 +32,41 @@
         $(".send").change(function(){
           $.post("server",
           {
-            user: 1,
+            token: 1,
             mode: $("select#mode").val(), //Send the selected mode value
             flash_mode: $("select#flash").val()
           });
           return false;
         });
         
-        $(".mod").change(function(){
-          $.post("server",
-          {
-            user: 1,
-            name: this.name,
-            value: this.checked
+        $(".mod").click(function(e){
+          var element = this; // https://stackoverflow.com/a/6394826s
+          e.preventDefault(); // Prevent the control from changing state, I want to change after the server's response
+          
+          $.ajax({
+            type: "POST",
+            url: "update",
+            dataType: 'json',
+            data: ({
+              type: "mod",
+              name: this.name,
+              value: this.checked //even if I prevent, the value turns true...
+            }),
+          
+          success: function(data, textStatus, jqXHR){
+            console.log("data");
+            console.log(data[element.name]);
+            element.checked = data[element.name];
+          },
+          error: function(xhr, status, error) {}
           });
-          return false;
         });
         
         
         $("#program_button").click(function(){
           $.ajax({
             type: "POST",
-            url: "server",
+            url: "update",
             dataType: 'text',
             data: ({
               user: 1,
@@ -71,7 +84,6 @@
           });
           
           console.log(data);
-          return false;
         });
         
         
@@ -82,7 +94,6 @@
             user: 1,
             event: "flash_button"
           });
-          return false;
         });
         
         
@@ -246,49 +257,49 @@
               <option value=10>Blink Solid</option>
             </select>
           </p>
-          <input type="button" value="Flashing TDs & Alleys" id="flash_button">
+          <input type="button" value="Flashing TDs & Alleys" id="flash_button" name="flashingTdsAlleysMode">
         </div>
       </section>
       <section>
         <h1>Modifiers</h1>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="RightSide">
+            <input class="mod" type="checkbox" name="rightSideAlley">
             <span class="slider round"></span>
           </label>
           Enable right-side alley lights
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="LeftSide">
+            <input class="mod" type="checkbox" name="leftSideAlley">
             <span class="slider round"></span>
           </label>
           Enable left-side alley lights
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="LowPower">
+            <input class="mod" type="checkbox" name="lowPower">
             <span class="slider round"></span>
           </label>
           Low power
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="DisableFront">
+            <input class="mod" type="checkbox" name="frontCutoff">
             <span class="slider round"></span>
           </label>
           Disable front lights
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="DisableRear">
+            <input class="mod" type="checkbox" name="rearCutoff">
             <span class="slider round"></span>
           </label>
           Disable rear lights
         </p>
         <p>
           <label class="switch">
-            <input class="mod" type="checkbox" name="TakeDowns">
+            <input class="mod" type="checkbox" name="takeDownLights">
             <span class="slider round"></span>
           </label>
           Take Downs
