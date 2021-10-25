@@ -7,6 +7,29 @@
     <link rel="stylesheet" href="styles.css">
     <script src="jquery.min.js"></script>
     <script language="javascript" type="text/javascript">
+      function reshapeGui()
+      {
+        // Hide and unhide controls accoridng to the mode
+        var mode = $("#mode").first().val();
+        if(mode==1){
+          //Mode 1
+          $(".mode").hide();
+          $(".mode1").show();
+        }
+        if(mode==2){
+          // Mode 2
+          $(".mode").hide();
+          $(".mode2").show();
+          $(".lightheadPattern").html( $("#lightheadPatterns").html() ); // Populates the comboboxes with the lists
+        }
+        if(mode==3){
+          // Steady 3
+          $(".mode").hide();
+          $(".mode3").show();
+          $(".lightheadPattern").html( $("#lightheadPatterns").html() ); // Populates the comboboxes with the lists
+        }
+      }
+
       $(function(){
 
         //Read the state
@@ -15,62 +38,48 @@
             url: "status",
             dataType: 'json',
             success: function(data, textStatus, jqXHR){
-              $("#mode")[0].value = data["mode"];
-              $("#flashPattern")[0].value = data["flashPattern"];
-              $("#flashingTdsAlleysMode")[0].value = data["flashingTdsAlleysMode"];
+              // dropdowns
+              $("#mode").first().val(data["mode"]);
+              reshapeGui();
+
+              $("#flashPattern").first().val(data["flashPattern"]);
+              $("#flashingTdsAlleysMode").first().val(data["flashingTdsAlleysMode"]);
+              $("#trafficArrowsMode").first().val(data["trafficArrowsMode"]);
+              $("#trafficArrowsPattern").first().val(data["trafficArrowsPattern"]);
+              $("#lp1").first().val(data["lp"][0]);
+              $("#lp2").first().val(data["lp"][1]);
+              $("#lp3").first().val(data["lp"][2]);
+              $("#lp4").first().val(data["lp"][3]);
+              $("#lp5").first().val(data["lp"][4]);
+              $("#lp6").first().val(data["lp"][5]);
+              // Checkboxes
               $("#cruiseMode")[0].checked = data["cruiseMode"];
-              $("#trafficArrowsMode")[0].value = data["trafficArrowsMode"];
-              $("#trafficArrowsPattern")[0].value = data["trafficArrowsPattern"];
               $("#rightSideAlley")[0].checked = data["rightSideAlley"];
               $("#leftSideAlley")[0].checked = data["leftSideAlley"];
               $("#lowPower")[0].checked = data["lowPower"];
               $("#frontCutoff")[0].checked = data["frontCutoff"];
               $("#rearCutoff")[0].checked = data["rearCutoff"];
               $("#takeDownLights")[0].checked = data["takeDownLights"];
-              $("#lp1").first().value = data["lp"][0];
-              $("#lp2").first().value = data["lp"][1];
-              $("#lp3").first().value = data["lp"][2];
-              $("#lp4").first().value = data["lp"][3];
-              $("#lp5").first().value = data["lp"][4];
-              $("#lp6").first().value = data["lp"][5];
             },
             error: function(xhr, status, error) {alert("Could not get initial state");}
             });
         
         $("#mode").change(function(){
+          var element = this;
 
           $.ajax({
             type: "POST",
             url: "update",
             dataType: 'json',
-            data: ({
+            data: JSON.stringify({
               mode: this.value
             }),
             success: function(data, textStatus, jqXHR){
-              element.checked = data[element.name];
+              reshapeGui();
             },
             error: function(xhr, status, error) {alert("The server did not reply");}
             });
-
-          if(this.value==1){
-            //Mode 1
-            $(".mode").hide();
-            $(".mode1").show();
-          }
-          if(this.value==2){
-            // Mode 2
-            $(".mode").hide();
-            $(".mode2").show();
-            $(".lightheadPattern").html( $("#lightheadPatterns").html() ); // Populates the comboboxes with the lists
-          }
-          if(this.value==3){
-            // Steady 3
-            $(".mode").hide();
-            $(".mode3").show();
-            $(".lightheadPattern").html( $("#lightheadPatterns").html() ); // Populates the comboboxes with the lists
-          }
         });
-
         
         $(".mod").click(function(e){
           var element = this; // https://stackoverflow.com/a/6394826s
@@ -80,7 +89,7 @@
             type: "POST",
             url: "update",
             dataType: 'json',
-            data: ({
+            data: JSON.stringify({
               mod: this.id,
               value: this.checked //even if I prevent, the value is the "desired" state...
             }),
@@ -97,7 +106,7 @@
             type: "POST",
             url: "update",
             dataType: 'json',
-            data: ({
+            data: JSON.stringify({
               cruiseMoreLightheads: true
             }),
           
@@ -110,8 +119,8 @@
           $.ajax({
             type: "POST",
             url: "update",
-            dataType: 'text',
-            data: ({
+            dataType: 'json',
+            data: JSON.stringify({
               trafficArrowsMode: this.value
             }),
 
@@ -124,8 +133,8 @@
           $.ajax({
             type: "POST",
             url: "update",
-            dataType: 'text',
-            data: ({
+            dataType: 'json',
+            data: JSON.stringify({
               trafficArrowsPattern: this.value
             }),
 
@@ -138,8 +147,8 @@
           $.ajax({
             type: "POST",
             url: "update",
-            dataType: 'text',
-            data: ({
+            dataType: 'json',
+            data: JSON.stringify({
               flashingTdsAlleysMode: this.value
             }),
 
@@ -149,11 +158,12 @@
         });
         
         $("#lightheadPatternsSend").click(function(){
+          $("#wait").show();
           $.ajax({
             type: "POST",
             url: "update",
-            dataType: 'text',
-            data: ({
+            dataType: 'json',
+            data: JSON.stringify({
               lightheadPatterns: true,
               lp: [
                 $("#lp1").first().val(),
@@ -164,11 +174,9 @@
                 $("#lp6").first().val()],
             }),
 
-            success: function(data, textStatus, jqXHR) {},
-            error: function(xhr, status, error) {}
+            success: function(data, textStatus, jqXHR) {$("#wait").hide();},
+            error: function(xhr, status, error) {$("#wait").hide();}
           });
-          
-          console.log(data);
         });
         
       });
@@ -287,6 +295,7 @@
             </table>
             <br />
             <button id="lightheadPatternsSend">Program</button>
+            <img src="wait.gif" hidden id="wait" width="25" height="25"/>
           </fieldset>
         </div>
         <!-- Traffic arrows -->

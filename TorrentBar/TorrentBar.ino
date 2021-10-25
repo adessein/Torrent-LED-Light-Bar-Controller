@@ -144,6 +144,7 @@ void setup(){
   webServer.on("/", sendIndex);
   webServer.on("/jquery.min.js", sendjQuery);
   webServer.on("/styles.css", sendCSS);
+  webServer.on("/wait.gif", sendWait);
   webServer.on("/update", HTTP_POST, update);
   webServer.on("/status", HTTP_GET, status);
 
@@ -175,6 +176,14 @@ void sendCSS()
   f.close();
 }
 
+void sendWait()
+{
+  Serial.println("Sending wait.gif... ");
+  File f = SPIFFS.open("/wait.gif", "r");
+  webServer.streamFile(f, "image/gif");
+  f.close();
+}
+
   
 void writeRegister(byte bh, byte bl)
 {
@@ -184,15 +193,6 @@ void writeRegister(byte bh, byte bl)
   shiftOut(dataPin, clockPin, MSBFIRST, bl);
   shiftOut(dataPin, clockPin, MSBFIRST, bh);
   digitalWrite(loadPin, HIGH);
-}
-
-void dumpArgs()
-{
-  for (int i=0; i<webServer.args(); i++){
-    Serial.print(webServer.argName(i));
-    Serial.print("=");
-    Serial.println(webServer.arg(i));
-  }
 }
 
 void sendIndex()
@@ -226,7 +226,7 @@ void status()
 
   char JSONmessageBuffer[1000];
   serializeJson(doc, JSONmessageBuffer, sizeof(JSONmessageBuffer));
-  webServer.send(200, "json", JSONmessageBuffer);
+  webServer.send(200, "text/json", JSONmessageBuffer);
 }
 
 
@@ -234,10 +234,14 @@ void update()
 {
   Serial.println("update");
 
-  if (webServer.hasArg("mode"))
+  StaticJsonDocument<500> payload;
+  Serial.println(webServer.arg("plain"));
+  deserializeJson(payload, webServer.arg("plain") );
+
+  if (payload.containsKey("mode"))
   {
     // {mode: int (1 to 3)}
-    mode = webServer.arg("mode").toInt();
+    mode = payload["mode"].as<int>();
     
     if(mode==1)
     {
@@ -260,17 +264,17 @@ void update()
     }
   }
 
-  if(webServer.hasArg("cruiseMode")) cruiseMode = webServer.arg("cruiseMode") == "true" ? 1:0; // green-black
+  if(payload.containsKey("cruiseMode")) cruiseMode = payload["cruiseMode"] == "true" ? 1:0; // green-black
 
-  if(webServer.hasArg("cruiseMoreLightheads"))
+  if(payload.containsKey("cruiseMoreLightheads"))
   {
     // Tap purple W[14] a single time
     tapWire(14, 1, false);
   }
 
-  if(webServer.hasArg("flashPattern"))
+  if(payload.containsKey("flashPattern"))
   {
-    flashPattern = webServer.arg("flashPattern").toInt();
+    flashPattern = payload["flashPattern"].as<int>();
 
     // Tap 3 times in a second W[9] to reset
     tapWire(9, 3, true);
@@ -278,16 +282,12 @@ void update()
     tapWire(9, flashPattern, false);
   }
 
-  if(webServer.hasArg("lightheadPatterns"))
+  if(payload.containsKey("lightheadPatterns"))
   {
-    const size_t CAPACITY = JSON_ARRAY_SIZE(6);
-    StaticJsonDocument<CAPACITY> doc;
-    deserializeJson(doc,  webServer.arg("lp"));
-    JsonArray array = doc.as<JsonArray>();
-
     for(int i=0;i<6;i++)
     {
-      lightheadPatterns[i] = array[i].as<int>();
+      Serial.println(payload["lp"][i].as<int>());
+      lightheadPatterns[i] = payload["lp"][i].as<int>();
     }
 
     // Tap 3 times in a second W[14] to enter program mode
@@ -308,9 +308,9 @@ void update()
     tapWire(14, 3, true);
   }
 
-  if (webServer.hasArg("trafficArrowsPattern"))
+  if (payload.containsKey("trafficArrowsPattern"))
   {
-    trafficArrowsPattern = webServer.arg("trafficArrowsPattern").toInt();
+    trafficArrowsPattern = payload["trafficArrowsPattern"].as<int>();
 
     // Tap 3 times in a second W[9] to reset 
     tapWire(9, 3, true);
@@ -318,9 +318,9 @@ void update()
     tapWire(9, trafficArrowsPattern, false);
   }
 
-  if(webServer.hasArg("flashingTdsAlleysMode"))
+  if(payload.containsKey("flashingTdsAlleysMode"))
   {
-    flashingTdsAlleysMode = webServer.arg("flashingTdsAlleysMode").toInt();
+    flashingTdsAlleysMode = payload["flashingTdsAlleysMode"].as<int>();
     
     flashingTdsAlleys = flashingTdsAlleysMode == 0 ? false:true;
 
@@ -335,24 +335,24 @@ void update()
 
   }
 
-  if (webServer.hasArg("trafficArrowsMode"))
+  if (payload.containsKey("trafficArrowsMode"))
   {
-    trafficArrowsMode = webServer.arg("trafficArrowsMode").toInt();
+    trafficArrowsMode = payload["trafficArrowsMode"].as<int>();
     W[4] = trafficArrowsMode == 1 || trafficArrowsMode == 3 ? 1:0; // orange
     W[5] = trafficArrowsMode == 2 || trafficArrowsMode == 3 ? 1:0; // blue
   }
 
-  if (webServer.hasArg("mod"))
+  if (payload.containsKey("mod"))
   {
-    if(webServer.arg("mod") == "takeDownLights")    takeDownLights = webServer.arg("value") == "true" ? true:false; // brown-black
-    if(webServer.arg("mod") == "rightSideAlley")    rightSideAlley  = webServer.arg("value") == "true" ? true:false; // orange-black
-    if(webServer.arg("mod") == "leftSideAlley")     leftSideAlley = webServer.arg("value") == "true" ? true:false; // blue-black
-    if(webServer.arg("mod") == "lowPower")          lowPower = webServer.arg("value") == "true" ? true:false;  // green 
-    if(webServer.arg("mod") == "frontCutoff")       frontCutoff = webServer.arg("value") == "true" ? true:false; // yellow-black
-    if(webServer.arg("mod") == "rearCutoff")        rearCutoff = webServer.arg("value") == "true" ? true:false; // green-black  
+    if(payload["mod"] == "takeDownLights")    takeDownLights = payload["value"] == "true" ? true:false; // brown-black
+    if(payload["mod"] == "rightSideAlley")    rightSideAlley  = payload["value"] == "true" ? true:false; // orange-black
+    if(payload["mod"] == "leftSideAlley")     leftSideAlley = payload["value"] == "true" ? true:false; // blue-black
+    if(payload["mod"] == "lowPower")          lowPower = payload["value"] == "true" ? true:false;  // green 
+    if(payload["mod"] == "frontCutoff")       frontCutoff = payload["value"] == "true" ? true:false; // yellow-black
+    if(payload["mod"] == "rearCutoff")        rearCutoff = payload["value"] == "true" ? true:false; // green-black  
     
-    if(webServer.arg("mod") == "crossPattern")    crossPattern = webServer.arg("value") == "true" ? true:false;  
-    if(webServer.arg("mod") == "cruiseMode")      cruiseMode = webServer.arg("value") == "true" ? true:false;  
+    if(payload["mod"] == "crossPattern")    crossPattern = payload["value"] == "true" ? true:false;  
+    if(payload["mod"] == "cruiseMode")      cruiseMode = payload["value"] == "true" ? true:false;  
   }
   
 
