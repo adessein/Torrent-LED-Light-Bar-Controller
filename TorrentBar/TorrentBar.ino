@@ -40,23 +40,31 @@ POST http://192.168.1.1/update?takeDownLights=true
 #include <FS.h>
 #include "ArduinoJson-v6.18.5.h"
 
-String configFileBuffer;
 
+// **** DECLARATIONS ****
+
+// Server settings
 const byte DNS_PORT = 53;
 const char *ssid = "Torrent LED Bar";
-
-const int dataPin = 12;   //Outputs the byte to transfer [D6]
-const int loadPin = 15;   //Controls the internal transference of data in SN74HC595 internal registers (LATCH) [D8]
-const int clockPin = 13; //Generates the clock signal to control the transference of data [D7]
-byte datah = 0xFF;
-byte datal = 0;
-
 IPAddress apIP(192, 168, 1, 1);
 DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
+// I/O settings
+const int dataPin = 12;   //Outputs the byte to transfer [D6]
+const int loadPin = 15;   //Controls the internal transference of data in SN74HC595 internal registers (LATCH) [D8]
+const int clockPin = 13; //Generates the clock signal to control the transference of data [D7]
+
+// Shift registers status byte
+byte datah = 0xFF;
+byte datal = 0;
+
+// JSON and file buffers
 char JSONmessageBuffer[1000];
+String configFileBuffer;
 DynamicJsonDocument doc(1024);
+
+// Machine states
 bool crossPattern;
 bool cruiseMode;
 bool flashingTdsAlleys;
@@ -66,18 +74,17 @@ short flashPattern; // 0 to 20
 short flashingTdsAlleysMode; // 0 to 3 (TD + Alley, Alley, TD)
 short trafficArrowsMode; // 0 to 3 (left, right, center out)
 short trafficArrowsPattern; // 0 to 10
-
-//mod
+// Machine states: modifiers
 bool rightSideAlley;
 bool leftSideAlley;
 bool lowPower;
 bool frontCutoff;
 bool rearCutoff;
 bool takeDownLights;
-//internals
+// Internal representation of the output
 bool W[16]; // state of the wires
 
-// Declarations
+// Function pototypes
 void tapWire(int, int, bool);
 void setup();
 void loop();
@@ -91,12 +98,11 @@ void status();
 void update();
 void updateConfigWithSSPIFS();
 
+// **** END DECLARATIONS ****
 
 void setup(){
   Serial.begin(115200);
   
-  //Sclear terminal
-
   Serial.println("=== Torrent LED Bar ===");
   Serial.println("Initialisation...");
   
@@ -172,7 +178,7 @@ void updateConfigWithSPIFFS()
     StaticJsonDocument<500> configuration;
     deserializeJson(configuration, configFileBuffer);
     Serial.println(" OK !");
-    update(configuration); //FIXME : this one does not update the variables, only output the wires. Update process instructions, not a full
+    update(configuration);
   }
   else
   {
@@ -264,8 +270,8 @@ void status()
   doc["takeDownLights"] = takeDownLights;
 
   // Light patterns (mode 2)
-  JsonArray data = doc.createNestedArray("lp");
-  for(int i=0;i<7;i++) data.add(lightheadPatterns[i]);
+  JsonArray data = doc.createNestedArray("lightheadPatterns");
+  for(int i=0;i<6;i++) data.add(lightheadPatterns[i]);
   
   serializeJson(doc, JSONmessageBuffer, sizeof(JSONmessageBuffer));
   Serial.println("OK !");
@@ -281,32 +287,21 @@ void status()
   }
   file.close();
 
-  // debug
-    Serial.print("  Reading settings file from EEPROM... ");
-  // Load previous configuration from file in EPROM if exists
-  File configFile = SPIFFS.open("/config.json", "r");
-  // We need to put the content of the file in a String for deserealisation
-  configFileBuffer.clear();
-  while (configFile.available()) configFileBuffer += char(configFile.read());
-  configFile.close();
-
-  Serial.println("OK !");
-  Serial.print("  Content of the JSON file: ");
-  Serial.println(configFileBuffer);
-  //enddebug
-
-
   Serial.print("  Replying to the client with the JSON file...");
   webServer.send(200, "text/json", JSONmessageBuffer);
   Serial.println(" OK !");
-  Serial.print("  Content of the JSON file: ");
-  Serial.println(JSONmessageBuffer);
+  // Serial.print("  Content of the JSON file: ");
+  // Serial.println(JSONmessageBuffer);
 }
 
 void receiveJsonFromClient()
 {
   Serial.print("Receiving commands from client...");
   StaticJsonDocument<500> payload;
+  
+  Serial.print("Payload received: ");
+  Serial.println(webServer.arg("plain"));
+  
   deserializeJson(payload, webServer.arg("plain"));
   Serial.println(" OK!");
   update(payload);
@@ -342,7 +337,7 @@ void update(StaticJsonDocument<500> payload)
     }
   }
 
-  if(payload.containsKey("cruiseMode")) cruiseMode = payload["cruiseMode"] == "true" ? 1:0; // green-black
+  if(payload.containsKey("cruiseMode")) cruiseMode = payload["cruiseMode"]; // green-black
 
   if(payload.containsKey("cruiseMoreLightheads"))
   {
@@ -364,8 +359,7 @@ void update(StaticJsonDocument<500> payload)
   {
     for(int i=0;i<6;i++)
     {
-      //Serial.println(payload["lp"][i].as<int>());
-      lightheadPatterns[i] = payload["lp"][i].as<int>();
+      lightheadPatterns[i] = payload["lightheadPatterns"][i].as<int>();
     }
 
     // Tap 3 times in a second W[14] to enter program mode
@@ -422,15 +416,15 @@ void update(StaticJsonDocument<500> payload)
 
   if (payload.containsKey("mod"))
   {
-    if(payload["mod"] == "takeDownLights")    takeDownLights = payload["value"] == "true" ? true:false; // brown-black
-    if(payload["mod"] == "rightSideAlley")    rightSideAlley  = payload["value"] == "true" ? true:false; // orange-black
-    if(payload["mod"] == "leftSideAlley")     leftSideAlley = payload["value"] == "true" ? true:false; // blue-black
-    if(payload["mod"] == "lowPower")          lowPower = payload["value"] == "true" ? true:false;  // green 
-    if(payload["mod"] == "frontCutoff")       frontCutoff = payload["value"] == "true" ? true:false; // yellow-black
-    if(payload["mod"] == "rearCutoff")        rearCutoff = payload["value"] == "true" ? true:false; // green-black  
+    if(payload["mod"] == "takeDownLights")    takeDownLights = payload["value"]; // brown-black
+    if(payload["mod"] == "rightSideAlley")    rightSideAlley  = payload["value"]; // orange-black
+    if(payload["mod"] == "leftSideAlley")     leftSideAlley = payload["value"]; // blue-black
+    if(payload["mod"] == "lowPower")          lowPower = payload["value"];  // green 
+    if(payload["mod"] == "frontCutoff")       frontCutoff = payload["value"]; // yellow-black
+    if(payload["mod"] == "rearCutoff")        rearCutoff = payload["value"]; // green-black  
     
-    if(payload["mod"] == "crossPattern")    crossPattern = payload["value"] == "true" ? true:false;  
-    if(payload["mod"] == "cruiseMode")      cruiseMode = payload["value"] == "true" ? true:false;  
+    if(payload["mod"] == "crossPattern")    crossPattern = payload["value"];  
+    if(payload["mod"] == "cruiseMode")      cruiseMode = payload["value"];  
   }
 
   W[3] = cruiseMode | crossPattern; // gray cruise mode or cross pattern
@@ -467,8 +461,11 @@ void setWires()
 
 void setWire(int w, bool state)
 {
+  // Modifies the bytes to be sent to the shift registers
+  // so that the wire *w* takes state *state*
   // state=true : Apply +12V
   // state=false : Apply 0V
+  
   if(state==false) // I want to pull up
   {
     if(w<8)
@@ -496,6 +493,10 @@ void setWire(int w, bool state)
 
 void tapWire(int w, int N=1, bool fast=false)
 {
+  // Sets the wire *w* to +12V during 50 ms, before settting back to 0V.
+  // This acction is repeated *N* times.
+  // If *fast* is set to True, 100 ms between each tap, otherwise 400 ms.
+
   Serial.print("  Tapping wire "); Serial.println(w, DEC);
   for(int i=0; i<N; i++)
   {

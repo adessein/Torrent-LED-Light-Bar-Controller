@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="jquery.min.js"></script>
     <script language="javascript" type="text/javascript">
+      
       function reshapeGui()
       {
         // Hide and unhide controls accoridng to the mode
@@ -34,35 +35,35 @@
 
         //Read the state
         $.ajax({
-            type: "GET",
-            url: "status",
-            dataType: 'json',
-            success: function(data, textStatus, jqXHR){
-              // dropdowns
-              $("#mode").first().val(data["mode"]);
-              reshapeGui();
+          type: "GET",
+          url: "status",
+          dataType: 'json',
+          success: function(data, textStatus, jqXHR){
+            // dropdowns
+            $("#mode").first().val(data["mode"]);
+            reshapeGui();
 
-              $("#flashPattern").first().val(data["flashPattern"]);
-              $("#flashingTdsAlleysMode").first().val(data["flashingTdsAlleysMode"]);
-              $("#trafficArrowsMode").first().val(data["trafficArrowsMode"]);
-              $("#trafficArrowsPattern").first().val(data["trafficArrowsPattern"]);
-              $("#lp1").first().val(data["lp"][0]);
-              $("#lp2").first().val(data["lp"][1]);
-              $("#lp3").first().val(data["lp"][2]);
-              $("#lp4").first().val(data["lp"][3]);
-              $("#lp5").first().val(data["lp"][4]);
-              $("#lp6").first().val(data["lp"][5]);
-              // Checkboxes
-              $("#cruiseMode")[0].checked = data["cruiseMode"];
-              $("#rightSideAlley")[0].checked = data["rightSideAlley"];
-              $("#leftSideAlley")[0].checked = data["leftSideAlley"];
-              $("#lowPower")[0].checked = data["lowPower"];
-              $("#frontCutoff")[0].checked = data["frontCutoff"];
-              $("#rearCutoff")[0].checked = data["rearCutoff"];
-              $("#takeDownLights")[0].checked = data["takeDownLights"];
-            },
-            error: function(xhr, status, error) {alert("Could not get initial state");}
-            });
+            $("#flashPattern").first().val(data["flashPattern"]);
+            $("#flashingTdsAlleysMode").first().val(data["flashingTdsAlleysMode"]);
+            $("#trafficArrowsMode").first().val(data["trafficArrowsMode"]);
+            $("#trafficArrowsPattern").first().val(data["trafficArrowsPattern"]);
+            $("#lp1").first().val(data["lightheadPatterns"][0]);
+            $("#lp2").first().val(data["lightheadPatterns"][1]);
+            $("#lp3").first().val(data["lightheadPatterns"][2]);
+            $("#lp4").first().val(data["lightheadPatterns"][3]);
+            $("#lp5").first().val(data["lightheadPatterns"][4]);
+            $("#lp6").first().val(data["lightheadPatterns"][5]);
+            // Checkboxes
+            $("#cruiseMode")[0].checked = data["cruiseMode"];
+            $("#rightSideAlley")[0].checked = data["rightSideAlley"];
+            $("#leftSideAlley")[0].checked = data["leftSideAlley"];
+            $("#lowPower")[0].checked = data["lowPower"];
+            $("#frontCutoff")[0].checked = data["frontCutoff"];
+            $("#rearCutoff")[0].checked = data["rearCutoff"];
+            $("#takeDownLights")[0].checked = data["takeDownLights"];
+          },
+          error: function(xhr, status, error) {alert("Could not get initial state");}
+        });
         
         $("#mode").change(function(){
           var element = this;
@@ -94,9 +95,7 @@
               value: this.checked //even if I prevent, the value is the "desired" state...
             }),
           
-          success: function(data, textStatus, jqXHR){
-            element.checked = data[element.id];
-          },
+          success: function(data, textStatus, jqXHR){element.checked = data[element.id];},
           error: function(xhr, status, error) {alert("The server did not reply");}
           });
         });
@@ -164,8 +163,7 @@
             url: "update",
             dataType: 'json',
             data: JSON.stringify({
-              lightheadPatterns: true,
-              lp: [
+              lightheadPatterns: [
                 $("#lp1").first().val(),
                 $("#lp2").first().val(),
                 $("#lp3").first().val(),
@@ -183,7 +181,7 @@
     </script>
   </head>
   <body>
-    <header>Torrent LED Light Bar control c23c8</header>
+    <header>Torrent LED Light Bar control</header>
       <section>
         <div>
           <fieldset class="fieldset-auto-width">
