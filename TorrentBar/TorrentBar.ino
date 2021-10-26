@@ -153,6 +153,7 @@ void setup(){
   webServer.on("/styles.css", sendCSS);
   webServer.on("/config.json", sendConfig);
   webServer.on("/wait.gif", sendWait);
+  webServer.on("/torrent.jpg", sendTorrentJpg);
   webServer.on("/update", HTTP_POST, receiveJsonFromClient);
   webServer.on("/status", HTTP_GET, status);
   webServer.begin();
@@ -198,6 +199,16 @@ void sendjQuery()
   Serial.print("Sending jQuery...");
   File f = SPIFFS.open("/jquery.min.js", "r");
   webServer.streamFile(f, "application/javascript");
+  f.close();
+  Serial.println(" OK !");
+}
+
+void sendTorrentJpg()
+{
+  // Sends the file torrent.jpg to the client on request (uploaded with the binary)
+  Serial.print("Sending torrent.jpg...");
+  File f = SPIFFS.open("/torrent.jpg", "r");
+  webServer.streamFile(f, "jpeg");
   f.close();
   Serial.println(" OK !");
 }

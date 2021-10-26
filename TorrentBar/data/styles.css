@@ -3,11 +3,22 @@ body {
 }
 
 header {
-  background-color: #666;
-  padding: 30px;
+  background-color: rgb(24, 66, 123);
+  padding: 20px;
   text-align: center;
-  font-size: 35px;
+  font-size: 20px;
   color: white;
+  width: 100%;
+}
+
+footer {
+  font-size: 20;
+  text-align: center;
+}
+
+img {
+  border: none; 
+  width: 100%;
 }
 
 section {

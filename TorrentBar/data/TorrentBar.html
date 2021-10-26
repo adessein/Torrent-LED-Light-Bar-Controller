@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8" />
     <title>Torrent LED Light Bar control</title>
+    <img src="torrent.jpg"/>
     <link rel="stylesheet" href="styles.css">
     <script src="jquery.min.js"></script>
     <script language="javascript" type="text/javascript">
@@ -183,6 +184,7 @@
   <body>
     <header>Torrent LED Light Bar control</header>
       <section>
+        <h1>Main mode</h1>
         <div>
           <fieldset class="fieldset-auto-width">
             <legend>Mode selection</legend>
@@ -296,10 +298,13 @@
             <img src="wait.gif" hidden id="wait" width="25" height="25"/>
           </fieldset>
         </div>
+      </section>
+      
+      <section>
         <!-- Traffic arrows -->
         <div class="mode mode1 mode2 cruisemode">
           <fieldset class="fieldset-auto-width">
-          <legend>Traffic arrow</legend>
+          <h1>Traffic arrow</h1>
           <p>
             <label>Mode</label>
             <select id="trafficArrowsMode">
@@ -328,7 +333,7 @@
         </div>
       </section>
       <section>
-        <legend>Flashing TDs and alleys</legend>
+        <h1>Flashing TDs and alleys</h1>
         <p>
           <label>Mode</label>
           <select id="flashingTdsAlleysMode">
@@ -342,7 +347,6 @@
 
       <section>
         <h1>Cruise mode</h1>
-        <legend>Cruise mode</legend>
         <p>
           <label class="switch">
             <input class="mod" type="checkbox" id="cruiseMode">
@@ -399,4 +403,7 @@
         </p>
       </section>
   </body>
+  <footer>
+    Arnaud Dessein - <a href="https://github.com/adessein/Torrent-LED-Light-Bar-Controller">Project on Github</a>
+  </footer>
 </html> 
