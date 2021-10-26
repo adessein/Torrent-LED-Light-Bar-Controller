@@ -40,7 +40,7 @@ POST http://192.168.1.1/update?takeDownLights=true
 #include <FS.h>
 #include "ArduinoJson-v6.18.5.h"
 
-String index_str;
+String configFileBuffer;
 
 const byte DNS_PORT = 53;
 const char *ssid = "Torrent LED Bar";
@@ -55,7 +55,7 @@ IPAddress apIP(192, 168, 1, 1);
 DNSServer dnsServer;
 ESP8266WebServer webServer(80);
 
-
+char JSONmessageBuffer[1000];
 DynamicJsonDocument doc(1024);
 bool crossPattern;
 bool cruiseMode;
@@ -77,30 +77,28 @@ bool takeDownLights;
 //internals
 bool W[16]; // state of the wires
 
-
+// Declarations
 void tapWire(int, int, bool);
 void setup();
 void loop();
 void sendCSS();
 void sendjQuery();
+void sendConfig();
 void writeRegister(byte, byte);
 void dumpArgs();
 void sendIndex();
 void status();
 void update();
-
+void updateConfigWithSSPIFS();
 
 
 void setup(){
   Serial.begin(115200);
-  Serial.println("=== Torrent LED Bar ===");
-  Serial.println("Starting ...");
   
-  SPIFFS.begin();
-  File f = SPIFFS.open("/TorrentBar.html", "r");
-  while (f.available()){
-    index_str += char(f.read());
-  }
+  //Sclear terminal
+
+  Serial.println("=== Torrent LED Bar ===");
+  Serial.println("Initialisation...");
   
   // Initialisation of the state
   for(int i=0;i<16;i++) W[i] = false;
@@ -122,35 +120,64 @@ void setup(){
   rearCutoff = false;
   takeDownLights = false;
 
-  Serial.print("I/Os......... ");
+  Serial.print("  Configuring I/Os...");
   pinMode(dataPin, OUTPUT);
   pinMode(loadPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
-  Serial.println("OK !");
-  
-  Serial.print("Wifi......... ");
+  Serial.println(" OK !");
+
+  SPIFFS.begin();
+  updateConfigWithSPIFFS();
+
+  Serial.print("  Configuring Wifi...");
   WiFi.mode(WIFI_AP);
   WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
   WiFi.softAP(ssid);
-  Serial.println("OK !");
+  Serial.println(" OK !");
 
-  Serial.print("DNS.......... ");
+  Serial.print("  Configuring DNS...");
   // if DNSServer is started with "*" for domain name, it will reply with
   // provided IP to all DNS request  
   dnsServer.start(DNS_PORT, "*", apIP);
   Serial.println("OK !");
 
-  Serial.print("Web server... ");
+  Serial.print("  Starting web server... ");
   webServer.on("/", sendIndex);
   webServer.on("/jquery.min.js", sendjQuery);
   webServer.on("/styles.css", sendCSS);
+  webServer.on("/config.json", sendConfig);
   webServer.on("/wait.gif", sendWait);
-  webServer.on("/update", HTTP_POST, update);
+  webServer.on("/update", HTTP_POST, receiveJsonFromClient);
   webServer.on("/status", HTTP_GET, status);
-
   webServer.begin();
   Serial.println("OK !");
-  writeRegister(0xFF,0xFF);
+}
+
+void updateConfigWithSPIFFS()
+{
+  Serial.print("  Reading settings file from EEPROM... ");
+  // Load previous configuration from file in EPROM if exists
+  File configFile = SPIFFS.open("/config.json", "r");
+  // We need to put the content of the file in a String for deserealisation
+  while (configFile.available()) configFileBuffer += char(configFile.read());
+  configFile.close();
+
+  Serial.println("OK !");
+  Serial.print("  Content of the JSON file: ");
+  Serial.println(configFileBuffer);
+
+  if(configFileBuffer.length()>0)
+  {
+    Serial.print("  Deserializing configuration from EPROM...");
+    StaticJsonDocument<500> configuration;
+    deserializeJson(configuration, configFileBuffer);
+    Serial.println(" OK !");
+    update(configuration); //FIXME : this one does not update the variables, only output the wires. Update process instructions, not a full
+  }
+  else
+  {
+    Serial.println("No configuration in EPROM... ");
+  }
 }
 
 void loop()
@@ -159,36 +186,48 @@ void loop()
   webServer.handleClient();
 }
 
-
 void sendjQuery()
 {
-  Serial.println("Sending jQuery... ");
+  // Sends the file jquery.min.j to the client on request (uploaded with the binary)
+  Serial.print("Sending jQuery...");
   File f = SPIFFS.open("/jquery.min.js", "r");
   webServer.streamFile(f, "application/javascript");
   f.close();
+  Serial.println(" OK !");
 }
 
 void sendCSS()
 {
-  Serial.println("Sending CSS... ");
+  // Sends the file styles.css to the client on request
+  Serial.print("Sending CSS...");
   File f = SPIFFS.open("/styles.css", "r");
   webServer.streamFile(f, "text/css");
   f.close();
+  Serial.println(" OK !");
+}
+
+void sendConfig()
+{
+  // This is jsut for debug
+  Serial.print("Sending config.json...");
+  File f = SPIFFS.open("/config.json", "r");
+  webServer.streamFile(f, "text/json");
+  f.close();
+  Serial.println(" OK !");
 }
 
 void sendWait()
 {
-  Serial.println("Sending wait.gif... ");
+  Serial.print("Sending wait.gif... ");
   File f = SPIFFS.open("/wait.gif", "r");
   webServer.streamFile(f, "image/gif");
   f.close();
+  Serial.println(" OK !");
 }
 
-  
 void writeRegister(byte bh, byte bl)
 {
-  Serial.println("writeRegister");
-  Serial.print(bh, BIN); Serial.print(" "); Serial.println(bl, BIN); 
+  //Serial.print(bh, BIN); Serial.print(" "); Serial.println(bl, BIN); 
   digitalWrite(loadPin, LOW);
   shiftOut(dataPin, clockPin, MSBFIRST, bl);
   shiftOut(dataPin, clockPin, MSBFIRST, bh);
@@ -197,13 +236,17 @@ void writeRegister(byte bh, byte bl)
 
 void sendIndex()
 {
-  Serial.println("Sending index page... ");
-  webServer.send(200, "text/html", index_str.c_str());
+  Serial.print("Sending index page...");
+  File f = SPIFFS.open("/TorrentBar.html", "r");
+  webServer.streamFile(f, "text/html");
+  f.close();
+  Serial.println(" OK!");
 }
 
 void status()
 {
-  Serial.println("status");
+  Serial.println("The client requested server's status:");
+  Serial.print("  Preparing JSON file... ");
   // Returns the current state as JSON
   doc["mode"] = mode;
 
@@ -223,20 +266,55 @@ void status()
   // Light patterns (mode 2)
   JsonArray data = doc.createNestedArray("lp");
   for(int i=0;i<7;i++) data.add(lightheadPatterns[i]);
-
-  char JSONmessageBuffer[1000];
+  
   serializeJson(doc, JSONmessageBuffer, sizeof(JSONmessageBuffer));
+  Serial.println("OK !");
+
+  Serial.print("  Saving file in EEPROM... ");
+  File file = SPIFFS.open("/config.json", "w");
+  int bytesWritten = file.print(JSONmessageBuffer);
+  if (bytesWritten > 0) {
+      Serial.print(bytesWritten);
+      Serial.println(" bytes written: OK !");
+  } else {
+      Serial.println("File write failed !");
+  }
+  file.close();
+
+  // debug
+    Serial.print("  Reading settings file from EEPROM... ");
+  // Load previous configuration from file in EPROM if exists
+  File configFile = SPIFFS.open("/config.json", "r");
+  // We need to put the content of the file in a String for deserealisation
+  configFileBuffer.clear();
+  while (configFile.available()) configFileBuffer += char(configFile.read());
+  configFile.close();
+
+  Serial.println("OK !");
+  Serial.print("  Content of the JSON file: ");
+  Serial.println(configFileBuffer);
+  //enddebug
+
+
+  Serial.print("  Replying to the client with the JSON file...");
   webServer.send(200, "text/json", JSONmessageBuffer);
+  Serial.println(" OK !");
+  Serial.print("  Content of the JSON file: ");
+  Serial.println(JSONmessageBuffer);
 }
 
-
-void update()
+void receiveJsonFromClient()
 {
-  Serial.println("update");
-
+  Serial.print("Receiving commands from client...");
   StaticJsonDocument<500> payload;
-  Serial.println(webServer.arg("plain"));
-  deserializeJson(payload, webServer.arg("plain") );
+  deserializeJson(payload, webServer.arg("plain"));
+  Serial.println(" OK!");
+  update(payload);
+}
+
+void update(StaticJsonDocument<500> payload)
+{
+  Serial.println("Updating configuration...");
 
   if (payload.containsKey("mode"))
   {
@@ -286,7 +364,7 @@ void update()
   {
     for(int i=0;i<6;i++)
     {
-      Serial.println(payload["lp"][i].as<int>());
+      //Serial.println(payload["lp"][i].as<int>());
       lightheadPatterns[i] = payload["lp"][i].as<int>();
     }
 
@@ -354,7 +432,6 @@ void update()
     if(payload["mod"] == "crossPattern")    crossPattern = payload["value"] == "true" ? true:false;  
     if(payload["mod"] == "cruiseMode")      cruiseMode = payload["value"] == "true" ? true:false;  
   }
-  
 
   W[3] = cruiseMode | crossPattern; // gray cruise mode or cross pattern
   W[6] = takeDownLights; // brown-black
@@ -374,14 +451,18 @@ void update()
 
 void setWires()
 {
+  Serial.print("  Preparing the signals to be sent to the bar...");
   // Reset the bytes
   datal = (byte)0xFF;
   datah = (byte)0xFF;
 
   for (int i=0;i<8;i++)  datal = datal & ~(1 << W[i]); // Pull down
   for (int i=8;i<16;i++) datah = datah & ~(1 << W[i]); // Pull down
+  Serial.println(" OK !");
 
+  Serial.print("Appling signals...");
   writeRegister(datah, datal);
+  Serial.println(" OK !");
 }
 
 void setWire(int w, bool state)
@@ -415,6 +496,7 @@ void setWire(int w, bool state)
 
 void tapWire(int w, int N=1, bool fast=false)
 {
+  Serial.print("  Tapping wire "); Serial.println(w, DEC);
   for(int i=0; i<N; i++)
   {
     setWire(w, true);
