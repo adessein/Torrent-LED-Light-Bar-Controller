@@ -1,0 +1,362 @@
+Receiving commands from client...Payload received: {"flashPattern":"1"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000000
+ OK !
+Appling signals... OK !
+11111111-11111111
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 298 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Sending index page... OK!
+Receiving commands from client...Payload received: {"flashPattern":"0"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000000
+ OK !
+Appling signals... OK !
+11111111-11111111
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 298 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"3"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000000
+ OK !
+Appling signals... OK !
+11111111-11111111
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 298 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"0"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000000
+ OK !
+Appling signals... OK !
+11111111-11111111
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 298 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"7"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000000
+ OK !
+Appling signals... OK !
+11111111-11111111
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 298 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Sending index page... OK!
+Receiving commands from client...Payload received: {"mode":"2"}
+ OK!
+Updating configuration...
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000010
+ OK !
+Appling signals... OK !
+11111111-11111101
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 298 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"mode":"1"}
+ OK!
+Updating configuration...
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000001
+ OK !
+Appling signals... OK !
+11111111-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 298 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"8"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000001
+ OK !
+Appling signals... OK !
+11111111-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 290 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"mod":"crossPattern","value":true}
+ OK!
+Updating configuration...
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000001001
+ OK !
+Appling signals... OK !
+11111111-11110110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"mod":"crossPattern","value":false}
+ OK!
+Updating configuration...
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000001
+ OK !
+Appling signals... OK !
+11111111-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 287 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"10"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000000000000001
+ OK !
+Appling signals... OK !
+11111111-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 288 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"mod":"lowPower","value":true}
+ OK!
+Updating configuration...
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 287 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"0"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"1"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"0"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Sending index page... OK!
+Receiving commands from client...Payload received: {"flashPattern":"1"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"2"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"3"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"4"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"3"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"5"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"4"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Sending index page... OK!
+Receiving commands from client...Payload received: {"flashPattern":"0"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"2"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"4"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Receiving commands from client...Payload received: {"flashPattern":"6"}
+ OK!
+Updating configuration...
+  Tapping wire 9
+  Tapping wire 9
+  Preparing the signals to be sent to the bar...11111111-11111111
+W= 0000010000000001
+ OK !
+Appling signals... OK !
+11111011-11111110
+The client requested server's status:
+  Preparing JSON file... OK !
+  Saving file in EEPROM... 286 bytes written: OK !
+  Replying to the client with the JSON file... OK !
+Sending index page... OK!
+Sending index page... OK!
+Sending index page... OK!
+x⸮x

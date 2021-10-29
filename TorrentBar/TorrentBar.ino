@@ -245,6 +245,10 @@ void sendWait()
 void writeRegister(byte bh, byte bl)
 {
   //Serial.print(bh, BIN); Serial.print(" "); Serial.println(bl, BIN); 
+  Serial.print(datah, BIN);
+  Serial.print("-");
+  Serial.println(datal, BIN);
+
   digitalWrite(loadPin, LOW);
   shiftOut(dataPin, clockPin, MSBFIRST, bl);
   shiftOut(dataPin, clockPin, MSBFIRST, bh);
@@ -279,6 +283,7 @@ void status()
   doc["frontCutoff"] = frontCutoff;
   doc["rearCutoff"] = rearCutoff;
   doc["takeDownLights"] = takeDownLights;
+  doc["crossPattern"] = crossPattern;
 
   // Light patterns (mode 2)
   JsonArray data = doc.createNestedArray("lightheadPatterns");
@@ -461,13 +466,18 @@ void setWires()
   datal = (byte)0xFF;
   datah = (byte)0xFF;
 
-  for (int i=0;i<8;i++)  datal = datal & ~(1 << W[i]); // Pull down
-  for (int i=8;i<16;i++) datah = datah & ~(1 << W[i]); // Pull down
+  Serial.print("W= ");
+  for (int i=15;i>=0;i--) Serial.print(W[i]);
+  Serial.println();
+
+  for (int i=0;i<8;i++)  datal = datal & ~(W[i] << i); // Pull down
+  for (int i=8;i<16;i++) datah = datah & ~(W[i] << i-8); // Pull down
   Serial.println(" OK !");
 
   Serial.print("Appling signals...");
   writeRegister(datah, datal);
   Serial.println(" OK !");
+  
 }
 
 void setWire(int w, bool state)
@@ -504,15 +514,17 @@ void setWire(int w, bool state)
 
 void tapWire(int w, int N=1, bool fast=false)
 {
-  // Sets the wire *w* to +12V during 50 ms, before settting back to 0V.
+  // Sets the wire *w* to +12V during 100 ms, before settting back to 0V.
   // This acction is repeated *N* times.
   // If *fast* is set to True, 100 ms between each tap, otherwise 400 ms.
 
-  Serial.print("  Tapping wire "); Serial.println(w, DEC);
+  Serial.print("  Tapping wire "); Serial.print(w, DEC);
+  Serial.print(" ("); Serial.print(N, DEC);
+  Serial.println(" times)");
   for(int i=0; i<N; i++)
   {
     setWire(w, true);
-    delay(50);
+    delay(200);
     setWire(w, false);
 
     if(fast) // triple tap

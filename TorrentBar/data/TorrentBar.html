@@ -143,6 +143,20 @@
           });
         });
 
+        $("#flashPattern").change(function(){
+          $.ajax({
+            type: "POST",
+            url: "update",
+            dataType: 'json',
+            data: JSON.stringify({
+              flashPattern: this.value
+            }),
+
+            success: function(data, textStatus, jqXHR) {},
+            error: function(xhr, status, error) {}
+          });
+        });
+
         $("#flashingTdsAlleysMode").change(function(){
           $.ajax({
             type: "POST",
@@ -204,7 +218,7 @@
             <legend>Flash pattern</legend>
             <p>
               <label>Pattern</label>
-              <select class="program" id="flashPattern">
+              <select id="flashPattern">
                 <option value=0>Outside-In Single</option>
                 <option value=1>Outside-In Ultra</option>
                 <option value=2>Side-by-Side Single</option>
@@ -230,7 +244,7 @@
             <div class="mode mode1 crosspattern initiallyHidden">
               <p>
                 <label class="switch">
-                  <input class="mod" type="checkbox" name="crossPattern">
+                  <input class="mod" type="checkbox" id="crossPattern">
                   <span class="slider round"></span>
                 </label>
                 Cross pattern
