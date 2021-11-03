@@ -13,7 +13,7 @@ int main()
     printf("\n");
     for (int i=0;i<8;i++)  datal = datal & ~(W[i] << i); // Pull down
     for (int i=8;i<16;i++) datah = datah & ~(W[i] << i-8); // Pull down
-    std::cout << "a = " << std::bitset<8>(datah)  << std::endl;
-    std::cout << "b = " << std::bitset<8>(datal)  << std::endl;
+    std::cout << "datah = " << std::bitset<8>(datah)  << std::endl;
+    std::cout << "datal = " << std::bitset<8>(datal)  << std::endl;
     return 0;
 }
